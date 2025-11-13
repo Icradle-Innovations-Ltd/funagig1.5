@@ -38,7 +38,7 @@ class NotificationManager {
         this.startUnreadCountPolling();
         
         // Set up real-time connection if user is logged in
-        if (Auth.isLoggedIn()) {
+        if (typeof Auth !== 'undefined' && Auth.isLoggedIn()) {
             this.connectRealTime();
         }
     }
@@ -165,7 +165,7 @@ class NotificationManager {
                 
                 // Attempt to reconnect after 5 seconds
                 setTimeout(() => {
-                    if (Auth.isLoggedIn()) {
+                    if (typeof Auth !== 'undefined' && Auth.isLoggedIn()) {
                         this.connectRealTime();
                     }
                 }, 5000);
@@ -253,7 +253,7 @@ class NotificationManager {
     startUnreadCountPolling() {
         // Check unread count every 30 seconds
         setInterval(() => {
-            if (Auth.isLoggedIn()) {
+            if (typeof Auth !== 'undefined' && Auth.isLoggedIn()) {
                 this.getUnreadCount();
             }
         }, 30000);
@@ -400,8 +400,19 @@ class NotificationManager {
     }
 }
 
-// Create global instance
-window.notificationManager = new NotificationManager();
+// Create global instance only after dependencies are available
+function initNotificationManager() {
+    if (typeof window !== 'undefined' && !window.notificationManager) {
+        window.notificationManager = new NotificationManager();
+    }
+}
+
+// Wait for Auth and apiFetch to be available before creating the global instance
+if (typeof Auth !== 'undefined' && typeof apiFetch !== 'undefined') {
+    initNotificationManager();
+} else {
+    window.addEventListener('appReady', initNotificationManager);
+}
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
