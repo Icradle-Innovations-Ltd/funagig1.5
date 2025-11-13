@@ -436,18 +436,64 @@
         }
 
         // Listen for the app ready event or check if functions are already available
-        if (typeof window.apiFetch !== 'undefined') {
-            // Functions already available
-            initializeLoginForm();
-        } else {
-            // Wait for the app ready event
-            window.addEventListener('appReady', function() {
-                console.log('App ready event received');
+        function checkForApiFetch() {
+            if (typeof window.apiFetch !== 'undefined') {
+                // Functions already available
                 initializeLoginForm();
-            });
+            } else {
+                // Wait for the app ready event
+                window.addEventListener('appReady', function() {
+                    console.log('App ready event received');
+                    initializeLoginForm();
+                });
+                
+                // Fallback: keep checking for a limited time
+                let attempts = 0;
+                const maxAttempts = 50; // 10 seconds max
+                const checkInterval = setInterval(() => {
+                    attempts++;
+                    if (typeof window.apiFetch !== 'undefined') {
+                        clearInterval(checkInterval);
+                        initializeLoginForm();
+                    } else if (attempts >= maxAttempts) {
+                        clearInterval(checkInterval);
+                        console.error('apiFetch failed to load');
+                        document.querySelector('.card').innerHTML = `
+                            <h2 style="color: #e53e3e;">Loading Error</h2>
+                            <p>Unable to load the application. Please try:</p>
+                            <ul style="text-align: left;">
+                                <li>Refreshing the page</li>
+                                <li>Clearing your browser cache</li>
+                                <li>Trying a different browser</li>
+                            </ul>
+                            <button onclick="window.location.reload()" style="margin-top: 10px;">Refresh Page</button>
+                        `;
+                    }
+                }, 200);
+            }
         }
+        
+        checkForApiFetch();
     </script>
-    <script src="distributed-config.js" type="module"></script>
+    <script src="distributed-config.js"></script>
     <script src="js/app.js" type="module"></script>
+    <!-- Fallback for production if modules don't load -->
+    <script>
+        // If modules didn't load after 3 seconds, try loading as regular script
+        setTimeout(() => {
+            if (typeof window.apiFetch === 'undefined') {
+                console.log('ES6 modules failed, trying fallback loading...');
+                const script = document.createElement('script');
+                script.src = 'js/app.js';
+                script.onload = () => {
+                    console.log('Fallback script loaded');
+                };
+                script.onerror = () => {
+                    console.error('Both module and fallback loading failed');
+                };
+                document.head.appendChild(script);
+            }
+        }, 3000);
+    </script>
 </body>
 </html>

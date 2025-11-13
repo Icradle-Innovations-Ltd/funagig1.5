@@ -625,16 +625,34 @@
         
         // Initialize signup form when DOM is ready
         // Listen for the app ready event or check if functions are already available
-        if (typeof window.apiFetch !== 'undefined') {
-            // Functions already available
-            initializeSignupForm();
-        } else {
-            // Wait for the app ready event
-            window.addEventListener('appReady', function() {
-                console.log('App ready event received in signup');
+        function checkForApiFetch() {
+            if (typeof window.apiFetch !== 'undefined') {
+                // Functions already available
                 initializeSignupForm();
-            });
+            } else {
+                // Wait for the app ready event
+                window.addEventListener('appReady', function() {
+                    console.log('App ready event received in signup');
+                    initializeSignupForm();
+                });
+                
+                // Fallback: keep checking for a limited time
+                let attempts = 0;
+                const maxAttempts = 50; // 10 seconds max
+                const checkInterval = setInterval(() => {
+                    attempts++;
+                    if (typeof window.apiFetch !== 'undefined') {
+                        clearInterval(checkInterval);
+                        initializeSignupForm();
+                    } else if (attempts >= maxAttempts) {
+                        clearInterval(checkInterval);
+                        console.error('apiFetch failed to load in signup');
+                    }
+                }, 200);
+            }
         }
+        
+        checkForApiFetch();
         
         function clearErrors() {
             const errorElements = document.querySelectorAll('.error-message');
@@ -664,5 +682,23 @@
         }
     </script>
     <script src="js/app.js" type="module"></script>
+    <!-- Fallback for production if modules don't load -->
+    <script>
+        // If modules didn't load after 3 seconds, try loading as regular script
+        setTimeout(() => {
+            if (typeof window.apiFetch === 'undefined') {
+                console.log('ES6 modules failed in signup, trying fallback loading...');
+                const script = document.createElement('script');
+                script.src = 'js/app.js';
+                script.onload = () => {
+                    console.log('Signup fallback script loaded');
+                };
+                script.onerror = () => {
+                    console.error('Both module and fallback loading failed in signup');
+                };
+                document.head.appendChild(script);
+            }
+        }, 3000);
+    </script>
 </body>
 </html>

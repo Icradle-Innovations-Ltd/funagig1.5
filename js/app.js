@@ -6,7 +6,13 @@
 // Development: Uses local XAMPP server
 
 // Check for Vite environment variables first (production)
-const VITE_API_BASE_URL = import.meta?.env?.VITE_API_BASE_URL;
+// Use try-catch to handle both module and non-module environments
+let VITE_API_BASE_URL;
+try {
+    VITE_API_BASE_URL = (typeof import !== 'undefined' && import.meta && import.meta.env) ? import.meta.env.VITE_API_BASE_URL : undefined;
+} catch (e) {
+    VITE_API_BASE_URL = undefined;
+}
 
 // Development fallback configuration
 const BACKEND_SERVER_IP = 'localhost'; // Your backend server IP
