@@ -3,8 +3,8 @@ services:
 - name: backend
   source_dir: /
   github:
-    repo: yourusername/funagig
-    branch: main
+    repo: Icradle-Innovations-Ltd/funagig1.5
+    branch: master
   build_command: echo "No build needed for PHP"
   run_command: vendor/bin/heroku-php-apache2 /
   environment_slug: php
@@ -35,8 +35,8 @@ static_sites:
 - name: frontend
   source_dir: /
   github:
-    repo: yourusername/funagig
-    branch: main
+    repo: Icradle-Innovations-Ltd/funagig1.5
+    branch: master
   build_command: npm install && npm run build
   output_dir: /dist
   routes:

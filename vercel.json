@@ -1,0 +1,21 @@
+{
+  "functions": {
+    "api/*.php": {
+      "runtime": "vercel-php@0.6.0"
+    }
+  },
+  "env": {
+    "DB_HOST": "@db_host",
+    "DB_PORT": "@db_port", 
+    "DB_USER": "@db_user",
+    "DB_PASS": "@db_pass",
+    "DB_NAME": "@db_name",
+    "DB_SSL": "@db_ssl",
+    "PRODUCTION_MODE": "true"
+  },
+  "build": {
+    "env": {
+      "VITE_API_BASE_URL": "https://funagig1-5.vercel.app/api"
+    }
+  }
+}
