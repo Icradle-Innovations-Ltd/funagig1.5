@@ -43,11 +43,11 @@ RewriteRule ^(.*)$ php/api.php [L,QSA]
     # Referrer Policy
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
     
-    # CORS for frontend
-    Header always set Access-Control-Allow-Origin "https://funagig1-5.vercel.app"
-    Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-    Header always set Access-Control-Allow-Headers "Content-Type, Authorization"
-    Header always set Access-Control-Allow-Credentials "true"
+    # CORS is now handled dynamically in PHP config.php
+    # Header always set Access-Control-Allow-Origin "https://funagig1-5.vercel.app"
+    # Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+    # Header always set Access-Control-Allow-Headers "Content-Type, Authorization"
+    # Header always set Access-Control-Allow-Credentials "true"
 </IfModule>
 
 # Disable server signature
