@@ -18,7 +18,7 @@ define('APP_URL', getenv('APP_URL') ?: 'http://localhost/funagig1.5'); // Use en
 define('HTTPS_REQUIRED', getenv('HTTPS_REQUIRED') === 'true'); // Force HTTPS in production
 
 // Security settings
-define('JWT_SECRET', 'your-secret-key-here-change-in-production'); // Use secure random in production
+define('JWT_SECRET', getenv('JWT_SECRET') ?: bin2hex(random_bytes(32))); // Generate secure random key if no env var
 define('PASSWORD_HASH_ALGO', PASSWORD_DEFAULT); // Revert to default for compatibility
 // Feature flags
 define('RATE_LIMIT_ENABLED', false); // Disable for development
@@ -365,9 +365,17 @@ function destroyUserSession() {
     // Clear session data
     $_SESSION = array();
     
-    // Destroy session cookie
+    // Destroy session cookie with security attributes
     if (isset($_COOKIE[session_name()])) {
-        setcookie(session_name(), '', time() - 42000, '/');
+        $isHTTPS = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+        setcookie(session_name(), '', [
+            'expires' => time() - 42000,
+            'path' => '/',
+            'domain' => '',
+            'secure' => $isHTTPS,
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
     }
     
     // Destroy session
