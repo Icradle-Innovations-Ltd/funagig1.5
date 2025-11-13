@@ -414,6 +414,8 @@ $allowedOrigins = [
     'http://192.168.1.138:3000',
     'http://localhost',
     'http://192.168.1.138:8080',
+    'https://funagig1-5.vercel.app',  // Production frontend
+    'https://vercel.app',  // Vercel preview deployments
     // Add more IPs as needed
 ];
 
