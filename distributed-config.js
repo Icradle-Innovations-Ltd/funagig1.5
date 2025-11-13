@@ -33,11 +33,11 @@ const API_BASE_URL = 'https://plankton-app-3beec.ondigitalocean.app';
 // Local backend alternative (uncomment if you have local database with test accounts):
 // const API_BASE_URL = `http://${DISTRIBUTED_CONFIG.backend.ip}:${DISTRIBUTED_CONFIG.backend.port}${DISTRIBUTED_CONFIG.backend.path}`;
 
-// Export for use in other files
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { DISTRIBUTED_CONFIG, API_BASE_URL };
-}
+// Export for ES modules
+export { DISTRIBUTED_CONFIG, API_BASE_URL };
 
-// Make available globally
-window.DISTRIBUTED_CONFIG = DISTRIBUTED_CONFIG;
-window.API_BASE_URL = API_BASE_URL;
+// Also make available globally for backward compatibility
+if (typeof window !== 'undefined') {
+    window.DISTRIBUTED_CONFIG = DISTRIBUTED_CONFIG;
+    window.API_BASE_URL = API_BASE_URL;
+}

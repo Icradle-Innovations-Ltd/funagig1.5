@@ -9,7 +9,7 @@
 // Use try-catch to handle both module and non-module environments
 let VITE_API_BASE_URL;
 try {
-    VITE_API_BASE_URL = (typeof import !== 'undefined' && import.meta && import.meta.env) ? import.meta.env.VITE_API_BASE_URL : undefined;
+    VITE_API_BASE_URL = (import.meta && import.meta.env) ? import.meta.env.VITE_API_BASE_URL : undefined;
 } catch (e) {
     VITE_API_BASE_URL = undefined;
 }
