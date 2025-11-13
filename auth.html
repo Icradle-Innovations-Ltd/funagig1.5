@@ -330,7 +330,15 @@
     <script>
         // Initialize when app.js is ready
         function initializeLoginForm() {
-            console.log('Setting up login form handler');
+            console.log('Setting up login form handler...');
+            
+            // Double-check that apiFetch is available
+            if (typeof window.apiFetch !== 'function') {
+                console.error('apiFetch not available in initializeLoginForm');
+                return;
+            }
+            
+            console.log('apiFetch confirmed available, setting up form listener');
             document.getElementById('login-form').addEventListener('submit', function(e) {
                 e.preventDefault();
                 
@@ -404,9 +412,60 @@
                 }
             });
         }
-
+        
+        // Wait for app.js to be ready using multiple methods
+        function checkForApiFetch() {
+            console.log('Checking for apiFetch availability...');
+            
+            // Method 1: Listen for appReady event
+            window.addEventListener('appReady', function(event) {
+                console.log('appReady event received', event.detail);
+                initializeLoginForm();
+            });
+            
+            // Method 2: Check if apiFetch is already available
+            if (typeof window.apiFetch === 'function') {
+                console.log('apiFetch already available');
+                initializeLoginForm();
+                return;
+            }
+            
+            // Method 3: Fallback polling with more detailed logging
+            let attempts = 0;
+            const maxAttempts = 50;
+            console.log('Starting fallback polling for apiFetch...');
+            const checkInterval = setInterval(() => {
+                attempts++;
+                console.log(`Polling attempt ${attempts}/${maxAttempts}, apiFetch type:`, typeof window.apiFetch);
+                
+                if (typeof window.apiFetch === 'function') {
+                    console.log('apiFetch found via polling!');
+                    clearInterval(checkInterval);
+                    initializeLoginForm();
+                } else if (attempts >= maxAttempts) {
+                    clearInterval(checkInterval);
+                    console.error('apiFetch failed to load after', maxAttempts, 'attempts');
+                    document.querySelector('.card').innerHTML = `
+                        <h2 style="color: #e53e3e;">Loading Error</h2>
+                        <p>Unable to load the application. Please try:</p>
+                        <ul style="text-align: left;">
+                            <li>Refreshing the page</li>
+                            <li>Clearing your browser cache</li>
+                            <li>Trying a different browser</li>
+                        </ul>
+                        <button onclick="window.location.reload()" style="margin-top: 10px;">Refresh Page</button>
+                    `;
+                }
+            }, 200);
+        }
+        
         // Initialize when DOM is ready
-        document.addEventListener('DOMContentLoaded', initializeLoginForm);
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, starting apiFetch check...');
+            checkForApiFetch();
+        });
+        
+        checkForApiFetch();
         
         function clearErrors() {
             const errorElements = document.querySelectorAll('.error-message');
