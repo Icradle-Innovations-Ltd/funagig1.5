@@ -18,6 +18,14 @@ class NotificationManager {
     }
     
     init() {
+        // Wait for apiFetch to be available before initializing
+        if (typeof apiFetch === 'undefined') {
+            if (typeof window !== 'undefined') {
+                window.addEventListener('appReady', () => this.init());
+            }
+            return;
+        }
+        
         // Determine API base for real-time events
         this.apiBase = (typeof window !== 'undefined' && window.APP_API_BASE_URL)
             ? window.APP_API_BASE_URL

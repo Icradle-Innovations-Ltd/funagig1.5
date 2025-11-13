@@ -90,20 +90,22 @@
     <script>
         // Load user data and update sidebar
         document.addEventListener('DOMContentLoaded', function() {
-            // Check if user is logged in
-            if (!Auth.isLoggedIn()) {
-                window.location.href = 'auth.html';
-                return;
-            }
-            
-            const user = Auth.getUser();
-            if (user) {
-                // Check if user is a student
-                if (user.type !== 'student') {
-                    showNotification('Access denied. This page is for students only.', 'error');
-                    window.location.href = user.type === 'business' ? 'business-dashboard.html' : 'auth.html';
+            // Wait for Auth to be available
+            function initPage() {
+                // Check if user is logged in
+                if (!Auth.isLoggedIn()) {
+                    window.location.href = 'auth.html';
                     return;
                 }
+                
+                const user = Auth.getUser();
+                if (user) {
+                    // Check if user is a student
+                    if (user.type !== 'student') {
+                        showNotification('Access denied. This page is for students only.', 'error');
+                        window.location.href = user.type === 'business' ? 'business-dashboard.html' : 'auth.html';
+                        return;
+                    }
                 
                 // Update user name in sidebar
                 const userName = user.name;
@@ -117,6 +119,13 @@
                 
                 // Load gigs data
                 loadGigs();
+            }
+            
+            // Check if Auth is available, if not wait for it
+            if (typeof Auth !== 'undefined') {
+                initPage();
+            } else {
+                window.addEventListener('appReady', initPage);
             }
         });
         

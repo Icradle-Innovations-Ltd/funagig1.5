@@ -86,8 +86,8 @@
     <script src="js/app.js" type="module"></script>
     <script src="js/notifications.js" type="module"></script>
     <script>
-        // Load user data and update dashboard
-        document.addEventListener('DOMContentLoaded', function() {
+        // Wait for app.js to be ready before using Auth
+        function initDashboard() {
             // Check if user is logged in
             if (!Auth.isLoggedIn()) {
                 window.location.href = 'auth.html';

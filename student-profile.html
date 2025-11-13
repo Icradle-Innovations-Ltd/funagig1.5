@@ -235,8 +235,17 @@
             .catch(error => {
                 console.error('Profile update error:', error);
                 showNotification('Failed to update profile', 'error');
+            }
+        }
+        
+        // Wait for Auth to be available
+        if (typeof Auth !== 'undefined') {
+            document.addEventListener('DOMContentLoaded', initProfile);
+        } else {
+            window.addEventListener('appReady', function() {
+                document.addEventListener('DOMContentLoaded', initProfile);
             });
-        });
+        }
     </script>
 </body>
 </html>
