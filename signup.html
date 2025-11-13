@@ -690,7 +690,7 @@
                 console.log('ES6 modules failed in signup, creating fallback...');
                 // Create minimal apiFetch fallback
                 window.apiFetch = function(url, options = {}) {
-                    const baseUrl = 'https://plankton-app-3beec.ondigitalocean.app';
+                    const baseUrl = 'http://localhost/funagig1.5/php/api.php';
                     const fullUrl = baseUrl + (url.startsWith('/') ? url : '/' + url);
                     
                     // Convert to FormData for auth endpoints to avoid CORS preflight

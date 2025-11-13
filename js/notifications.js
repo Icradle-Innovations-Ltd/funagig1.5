@@ -18,43 +18,90 @@ class NotificationManager {
     }
     
     init() {
+        console.log('NotificationManager: init() called');
+        console.log('NotificationManager: apiFetch available:', typeof apiFetch, typeof window.apiFetch);
+        
         // Wait for apiFetch to be available before initializing
-        if (typeof apiFetch === 'undefined') {
+        if (typeof apiFetch === 'undefined' && typeof window.apiFetch === 'undefined') {
+            console.log('NotificationManager: apiFetch not available, waiting for appReady event');
             if (typeof window !== 'undefined') {
-                window.addEventListener('appReady', () => this.init());
+                window.addEventListener('appReady', () => {
+                    console.log('NotificationManager: appReady event received, re-initializing');
+                    this.init();
+                });
             }
             return;
         }
+        
+        console.log('NotificationManager: apiFetch is available, continuing initialization');
         
         // Determine API base for real-time events
         this.apiBase = (typeof window !== 'undefined' && window.APP_API_BASE_URL)
             ? window.APP_API_BASE_URL
             : `${location.protocol}//${location.host}/php/api.php`;
         
-        // Load initial notifications
-        this.loadNotifications();
+        console.log('NotificationManager: API base set to:', this.apiBase);
+        
+        // Don't load notifications automatically - let the page control when to load
+        // this.loadNotifications();
         
         // Set up periodic unread count check
         this.startUnreadCountPolling();
         
         // Set up real-time connection if user is logged in
         if (typeof Auth !== 'undefined' && Auth.isLoggedIn()) {
+            console.log('NotificationManager: User is logged in, setting up real-time connection');
             this.connectRealTime();
+        } else {
+            console.log('NotificationManager: User not logged in or Auth not available');
         }
+        
+        console.log('NotificationManager: Initialization completed');
     }
     
     // Load notifications from server
     async loadNotifications(page = 1, limit = 20) {
+        console.log('NotificationManager: loadNotifications called with page:', page, 'limit:', limit);
+        console.log('NotificationManager: checking apiFetch availability:', typeof apiFetch, typeof window.apiFetch);
+        
         try {
-            const response = await apiFetch(`/notifications?page=${page}&limit=${limit}`);
-            if (response.success) {
+            console.log('NotificationManager: About to call apiFetch...');
+            
+            // Use window.apiFetch to ensure we get the global function
+            const fetchFunction = window.apiFetch || apiFetch;
+            console.log('NotificationManager: Using fetch function:', typeof fetchFunction);
+            
+            if (!fetchFunction) {
+                throw new Error('apiFetch function not available');
+            }
+            
+            const response = await fetchFunction(`/notifications?page=${page}&limit=${limit}`);
+            console.log('NotificationManager: apiFetch completed, response:', response);
+            
+            if (response && response.success) {
+                console.log('NotificationManager: Setting notifications array:', response.notifications);
                 this.notifications = response.notifications;
+                console.log('NotificationManager: Calling updateNotificationDisplay...');
                 this.updateNotificationDisplay();
+                console.log('NotificationManager: Display update completed, returning response');
                 return response;
+            } else {
+                console.error('NotificationManager: API response not successful:', response);
+                throw new Error('API response not successful: ' + (response ? JSON.stringify(response) : 'null response'));
             }
         } catch (error) {
-            console.error('Failed to load notifications:', error);
-            this.showNotification('Failed to load notifications', 'error');
+            console.error('NotificationManager: Exception in loadNotifications:', error);
+            console.error('NotificationManager: Error stack:', error.stack);
+            console.error('NotificationManager: Error name:', error.name);
+            console.error('NotificationManager: Error message:', error.message);
+            
+            // Try to show notification if the method is available
+            if (typeof this.showNotification === 'function') {
+                this.showNotification('Failed to load notifications', 'error');
+            }
+            
+            // Re-throw so the calling code can handle it
+            throw error;
         }
     }
     
@@ -261,10 +308,18 @@ class NotificationManager {
     
     // Update notification display
     updateNotificationDisplay() {
+        console.log('NotificationManager: updateNotificationDisplay called');
         const container = document.getElementById('notifications-container');
-        if (!container) return;
+        console.log('NotificationManager: Container found:', !!container);
+        console.log('NotificationManager: Notifications array:', this.notifications);
+        
+        if (!container) {
+            console.log('NotificationManager: No notifications-container found');
+            return;
+        }
         
         if (this.notifications.length === 0) {
+            console.log('NotificationManager: No notifications, showing empty state');
             container.innerHTML = `
                 <div class="empty-state">
                     <div class="empty-icon">🔔</div>
@@ -274,7 +329,8 @@ class NotificationManager {
             `;
             return;
         }
-        
+
+        console.log('NotificationManager: Rendering', this.notifications.length, 'notifications');
         const notificationsHtml = this.notifications.map(notification => `
             <div class="notification-item ${notification.is_read ? 'read' : 'unread'}" 
                  data-notification-id="${notification.id}">

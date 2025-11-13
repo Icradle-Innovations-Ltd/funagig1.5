@@ -28,10 +28,10 @@ const DISTRIBUTED_CONFIG = {
 };
 
 // Generate API URL
-// For development: use production backend to access test accounts
-const API_BASE_URL = 'https://plankton-app-3beec.ondigitalocean.app';
-// Local backend alternative (uncomment if you have local database with test accounts):
-// const API_BASE_URL = `http://${DISTRIBUTED_CONFIG.backend.ip}:${DISTRIBUTED_CONFIG.backend.port}${DISTRIBUTED_CONFIG.backend.path}`;
+// For development: use local backend with test accounts
+// const API_BASE_URL = 'https://plankton-app-3beec.ondigitalocean.app';
+// Local backend (local database with test accounts):
+const API_BASE_URL = `http://${DISTRIBUTED_CONFIG.backend.ip}:${DISTRIBUTED_CONFIG.backend.port}${DISTRIBUTED_CONFIG.backend.path}`;
 
 // Export for ES modules
 export { DISTRIBUTED_CONFIG, API_BASE_URL };

@@ -275,9 +275,15 @@
         let currentPage = 1;
         let totalPages = 1;
 
-        // Check authentication
-        document.addEventListener('DOMContentLoaded', function() {
-            if (!Auth.isLoggedIn()) {
+        // Initialize notifications page
+        function initNotificationsPage() {
+            console.log('Initializing notifications page...');
+            console.log('Auth available:', typeof Auth !== 'undefined');
+            console.log('Auth logged in:', typeof Auth !== 'undefined' ? Auth.isLoggedIn() : 'Auth not available');
+            console.log('NotificationManager available:', typeof window.notificationManager !== 'undefined');
+            
+            if (typeof Auth === 'undefined' || !Auth.isLoggedIn()) {
+                console.log('Not authenticated, redirecting to auth.html');
                 window.location.href = 'auth.html';
                 return;
             }
@@ -286,40 +292,236 @@
             loadNotifications();
 
             // Set up real-time connection
-            if (window.notificationManager) window.notificationManager.addCallback('onConnectionChange', function(connected) {
-                const status = document.getElementById('connection-status');
-                if (connected) {
-                    status.textContent = 'Connected';
-                    status.className = 'connection-status connected';
-                } else {
-                    status.textContent = 'Disconnected';
-                    status.className = 'connection-status disconnected';
-                }
-            });
+            if (window.notificationManager) {
+                console.log('Setting up notification manager callbacks...');
+                window.notificationManager.addCallback('onConnectionChange', function(connected) {
+                    console.log('Connection status changed:', connected);
+                    const status = document.getElementById('connection-status');
+                    if (connected) {
+                        status.textContent = 'Connected';
+                        status.className = 'connection-status connected';
+                    } else {
+                        status.textContent = 'Disconnected';
+                        status.className = 'connection-status disconnected';
+                    }
+                });
 
-            // Set up notification callbacks
-            if (window.notificationManager) window.notificationManager.addCallback('onNotification', function(notification) {
-                showNotification(`New notification: ${notification.title}`, 'info');
-            });
+                // Set up notification callbacks
+                window.notificationManager.addCallback('onNotification', function(notification) {
+                    showNotification(`New notification: ${notification.title}`, 'info');
+                });
 
-            if (window.notificationManager) window.notificationManager.addCallback('onUnreadCountChange', function(count) {
-                updateUnreadCount(count);
-            });
+                window.notificationManager.addCallback('onUnreadCountChange', function(count) {
+                    updateUnreadCount(count);
+                });
+            } else {
+                console.log('NotificationManager not available, will retry...');
+                setTimeout(initNotificationsPage, 100);
+            }
+        }
+
+        // Check authentication
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, waiting for app to be ready...');
+            if (typeof Auth !== 'undefined') {
+                initNotificationsPage();
+            } else {
+                // Wait for app.js to load
+                window.addEventListener('appReady', function() {
+                    console.log('App ready event received');
+                    initNotificationsPage();
+                });
+                
+                // Fallback timeout
+                setTimeout(function() {
+                    if (typeof Auth === 'undefined') {
+                        console.log('Auth still not available after timeout');
+                    }
+                    initNotificationsPage();
+                }, 1000);
+            }
         });
 
-        // Load notifications
+        // Load notifications with timeout
         async function loadNotifications(page = 1) {
+            console.log('Loading notifications, page:', page);
+            
+            // Check authentication status first
+            console.log('Checking authentication status...');
+            console.log('Auth.isLoggedIn():', Auth.isLoggedIn());
+            console.log('Document cookies:', document.cookie);
+            
+            // If not logged in, redirect to auth page
+            if (!Auth.isLoggedIn()) {
+                console.log('Not logged in, redirecting to auth page...');
+                window.location.href = 'auth.html';
+                return;
+            }
+            
+            // Create a timeout promise to prevent hanging
+            const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(() => {
+                    reject(new Error('API request timed out after 10 seconds'));
+                }, 10000);
+            });
+            
+            // First, let's try a direct API call to see what happens
+            console.log('Testing direct API call with timeout...');
             try {
-                const response = window.notificationManager ? await window.notificationManager.loadNotifications(page, 20) : null;
-                if (response) {
-                    currentPage = response.pagination.page;
-                    totalPages = response.pagination.pages;
+                console.log('About to call apiFetch...');
+                
+                // Race between the API call and timeout
+                const directResponse = await Promise.race([
+                    apiFetch(`/notifications?page=${page}&limit=20`),
+                    timeoutPromise
+                ]);
+                
+                console.log('Direct API call completed!');
+                console.log('Direct API call response:', directResponse);
+                
+                if (directResponse && directResponse.success) {
+                    console.log('Direct API call successful! Displaying notifications...');
+                    displayNotifications(directResponse.notifications);
+                    currentPage = directResponse.pagination.page;
+                    totalPages = directResponse.pagination.pages;
                     updatePagination();
+                    return directResponse;
+                } else {
+                    console.error('Direct API call returned unsuccessful response:', directResponse);
+                    throw new Error('API returned unsuccessful response: ' + (directResponse ? JSON.stringify(directResponse) : 'null'));
+                }
+            } catch (directError) {
+                console.error('Direct API call failed with error:', directError);
+                console.error('Error type:', typeof directError);
+                console.error('Error message:', directError.message);
+                
+                // Check if this is a timeout error
+                if (directError.message && directError.message.includes('timed out')) {
+                    console.log('Request timed out, showing timeout error...');
+                    const container = document.getElementById('notifications-container');
+                    if (container) {
+                        container.innerHTML = `
+                            <div style="text-align: center; padding: 40px; color: #666;">
+                                <h3>Request Timed Out</h3>
+                                <p>The notifications request is taking too long. This might be a network or server issue.</p>
+                                <button class="btn" onclick="loadNotifications()">Try Again</button>
+                                <button class="btn secondary" onclick="window.location.href='auth.html'" style="margin-left: 8px;">Re-login</button>
+                            </div>
+                        `;
+                    }
+                    return;
+                }
+                
+                // Check if this is an authentication error
+                if (directError.message && (directError.message.includes('401') || directError.message.includes('Authentication required'))) {
+                    console.log('Authentication error detected, redirecting to login...');
+                    window.location.href = 'auth.html';
+                    return;
+                }
+                
+                // Show error in UI
+                const container = document.getElementById('notifications-container');
+                if (container) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: #666;">
+                            <h3>Failed to Load Notifications</h3>
+                            <p>${directError.message}</p>
+                            <button class="btn" onclick="loadNotifications()">Retry</button>
+                            <button class="btn secondary" onclick="window.location.href='auth.html'" style="margin-left: 8px;">Re-login</button>
+                        </div>
+                    `;
+                }
+            }
+            
+            try {
+                if (!window.notificationManager) {
+                    console.log('NotificationManager not available, using direct API...');
+                    throw new Error('NotificationManager not available');
+                } else {
+                    console.log('Using NotificationManager to load notifications...');
+                    try {
+                        const response = await window.notificationManager.loadNotifications(page, 20);
+                        console.log('NotificationManager response received in page:', response);
+                        if (response) {
+                            console.log('NotificationManager returned data:', response);
+                            console.log('Notifications:', response.notifications);
+                            
+                            // The NotificationManager should have updated the display automatically
+                            // But let's also update our pagination
+                            currentPage = response.pagination.page;
+                            totalPages = response.pagination.pages;
+                            updatePagination();
+                            return response;
+                        } else {
+                            console.log('NotificationManager returned null/undefined response');
+                            throw new Error('NotificationManager returned no data');
+                        }
+                    } catch (managerError) {
+                        console.error('NotificationManager failed, trying direct API call:', managerError);
+                        // Fallback to direct API call if NotificationManager fails
+                        const response = await apiFetch(`/notifications?page=${page}&limit=20`);
+                        if (response && response.success) {
+                            console.log('Fallback API call successful:', response);
+                            displayNotifications(response.notifications);
+                            currentPage = response.pagination.page;
+                            totalPages = response.pagination.pages;
+                            updatePagination();
+                            return response;
+                        } else {
+                            throw new Error('Both NotificationManager and direct API failed: ' + (response ? response.error : 'No response'));
+                        }
+                    }
                 }
             } catch (error) {
                 console.error('Failed to load notifications:', error);
-                showNotification('Failed to load notifications', 'error');
+                showNotification('Failed to load notifications: ' + error.message, 'error');
+                
+                // Update the loading message to show error
+                const container = document.getElementById('notifications-container');
+                if (container) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: #666;">
+                            <h3>Failed to load notifications</h3>
+                            <p>${error.message}</p>
+                            <button class="btn" onclick="loadNotifications()">Retry</button>
+                        </div>
+                    `;
+                }
             }
+        }
+
+        // Display notifications in the UI
+        function displayNotifications(notifications) {
+            console.log('Displaying notifications:', notifications);
+            const container = document.getElementById('notifications-container');
+            if (!container) {
+                console.error('Notifications container not found');
+                return;
+            }
+
+            if (!notifications || notifications.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #666;">
+                        <h3>No notifications yet</h3>
+                        <p>You'll see your latest updates here.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = notifications.map(notification => `
+                <div class="notification-item ${notification.is_read ? 'read' : 'unread'}" data-id="${notification.id}">
+                    <div class="notification-header-item">
+                        <h4>${notification.title}</h4>
+                        <span class="notification-time">${new Date(notification.created_at).toLocaleString()}</span>
+                    </div>
+                    <p class="notification-message">${notification.message}</p>
+                    <div class="notification-footer">
+                        <span class="notification-type ${notification.type}">${notification.type}</span>
+                        ${!notification.is_read ? `<button class="btn small" onclick="markAsRead(${notification.id})">Mark as Read</button>` : ''}
+                    </div>
+                </div>
+            `).join('');
         }
 
         // Change page

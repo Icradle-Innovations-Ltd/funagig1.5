@@ -328,8 +328,16 @@
     </div>
 
     <script>
+        // Prevent multiple initializations
+        let loginFormInitialized = false;
+        
         // Initialize when app.js is ready
         function initializeLoginForm() {
+            if (loginFormInitialized) {
+                console.log('Login form already initialized, skipping...');
+                return;
+            }
+            
             console.log('Setting up login form handler...');
             
             // Double-check that apiFetch is available
@@ -411,6 +419,10 @@
                     });
                 }
             });
+            
+            // Mark as initialized to prevent duplicate event listeners
+            loginFormInitialized = true;
+            console.log('Login form initialization completed');
         }
         
         // Wait for app.js to be ready using multiple methods
@@ -476,8 +488,6 @@
             console.log('DOM loaded, starting apiFetch check...');
             checkForApiFetch();
         });
-        
-        checkForApiFetch();
         
         function clearErrors() {
             const errorElements = document.querySelectorAll('.error-message');
@@ -556,7 +566,7 @@
                 console.log('ES6 modules failed, trying fallback loading...');
                 // Instead of loading the same file, create a minimal fallback
                 window.apiFetch = function(url, options = {}) {
-                    const baseUrl = 'https://plankton-app-3beec.ondigitalocean.app';
+                    const baseUrl = 'http://localhost/funagig1.5/php/api.php';
                     const fullUrl = baseUrl + (url.startsWith('/') ? url : '/' + url);
                     
                     // Convert to FormData for auth endpoints to avoid CORS preflight

@@ -104,6 +104,10 @@ async function apiFetch(endpoint, options = {}) {
         mode: 'cors'
     };
     
+    // Debug: Log cookies and request details
+    console.log('🍪 Cookies being sent:', document.cookie);
+    console.log('📡 API Request:', { endpoint, url, method: options.method || 'GET' });
+    
     const config = { ...defaultOptions, ...options };
     
     // For POST requests, try to use FormData to avoid CORS preflight
@@ -130,13 +134,41 @@ async function apiFetch(endpoint, options = {}) {
         
         // Check if response is ok
         if (!response.ok) {
+            // Handle 401 Unauthorized - but only for protected endpoints, not login/signup
+            const isLoginEndpoint = endpoint.includes('login') || endpoint.includes('signup') || endpoint.includes('auth');
+            
+            // Log all failed requests for debugging
+            console.error('=== API REQUEST FAILED ===');
+            console.error('Endpoint:', endpoint);
+            console.error('URL:', url);
+            console.error('Status:', response.status);
+            console.error('Status Text:', response.statusText);
+            console.error('Is Login Endpoint:', isLoginEndpoint);
+            console.error('========================');
+            
+            if (response.status === 401 && !isLoginEndpoint) {
+                console.warn('🔒 Session expired or unauthorized access to protected endpoint:', endpoint);
+                // Clear local auth state
+                if (typeof Auth !== 'undefined' && Auth.logout) {
+                    Auth.logout();
+                }
+                // Redirect to login if not already on auth page
+                if (typeof window !== 'undefined' && !window.location.pathname.includes('auth.html')) {
+                    window.location.href = 'auth.html';
+                    return; // Don't throw error if redirecting
+                }
+            }
+            
             let errorMessage = 'Request failed';
             try {
                 const errorData = await response.json();
                 errorMessage = errorData.error || errorMessage;
+                console.error('❌ Error response data:', errorData);
             } catch (parseError) {
                 errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+                console.error('❌ Failed to parse error response:', parseError);
             }
+            console.error('❌ Final error message:', errorMessage);
             throw new Error(errorMessage);
         }
         
@@ -237,7 +269,17 @@ const Auth = {
     isLoggedIn() {
         try {
             const user = Storage.get('user');
-            return user !== null && typeof user === 'object';
+            const isLocalAuth = user !== null && typeof user === 'object';
+            
+            // If no local auth, definitely not logged in
+            if (!isLocalAuth) {
+                return false;
+            }
+            
+            // For now, return true if local auth exists
+            // Note: validateSession() method is available for server-side validation
+            // Any 401 responses will trigger automatic logout via apiFetch
+            return true;
         } catch (error) {
             console.error('Auth check error:', error);
             return false;
