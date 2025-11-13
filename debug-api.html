@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API URL Debug</title>
+</head>
+<body>
+    <h1>API URL Configuration Debug</h1>
+    <div id="debug-info"></div>
+    <button id="test-api">Test API Connection</button>
+
+    <script>
+        function showDebugInfo() {
+            const debugDiv = document.getElementById('debug-info');
+            
+            // Check various API URL sources
+            const viteEnv = import.meta?.env?.VITE_API_BASE_URL;
+            const windowApiUrl = window.API_BASE_URL;
+            const distributedConfig = window.DISTRIBUTED_CONFIG;
+            
+            debugDiv.innerHTML = `
+                <h3>API Configuration Sources:</h3>
+                <p><strong>Vite ENV VITE_API_BASE_URL:</strong> ${viteEnv || 'undefined'}</p>
+                <p><strong>window.API_BASE_URL:</strong> ${windowApiUrl || 'undefined'}</p>
+                <p><strong>window.APP_API_BASE_URL:</strong> ${window.APP_API_BASE_URL || 'undefined'}</p>
+                <p><strong>Distributed Config:</strong> ${distributedConfig ? JSON.stringify(distributedConfig, null, 2) : 'undefined'}</p>
+                <hr>
+                <h3>apiFetch Available:</h3>
+                <p><strong>window.apiFetch:</strong> ${typeof window.apiFetch}</p>
+            `;
+        }
+
+        document.getElementById('test-api').addEventListener('click', async function() {
+            try {
+                if (window.apiFetch) {
+                    console.log('Testing apiFetch with URL:', window.APP_API_BASE_URL);
+                    const response = await window.apiFetch('/login', {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            email: 'alice@demo.com',
+                            password: 'demo123'
+                        })
+                    });
+                    console.log('API Response:', response);
+                    document.getElementById('debug-info').innerHTML += `<p style="color: green;">✅ API Test Success: ${JSON.stringify(response.user?.name || response)}</p>`;
+                } else {
+                    document.getElementById('debug-info').innerHTML += `<p style="color: red;">❌ apiFetch not available</p>`;
+                }
+            } catch (error) {
+                console.error('API Test Error:', error);
+                document.getElementById('debug-info').innerHTML += `<p style="color: red;">❌ API Test Error: ${error.message}</p>`;
+            }
+        });
+
+        // Wait for everything to load
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(showDebugInfo, 1000); // Wait for all scripts to load
+        });
+    </script>
+    
+    <script src="distributed-config.js" type="module"></script>
+    <script src="js/app.js" type="module"></script>
+</body>
+</html>

@@ -21,8 +21,10 @@ if (VITE_API_BASE_URL) {
     // Distributed config fallback
     APP_API_BASE_URL = window.API_BASE_URL;
 } else {
-    // Development fallback
-    APP_API_BASE_URL = `http://${BACKEND_SERVER_IP}${XAMPP_BASE_PATH}/php/api.php`;
+    // Development: Use production backend for testing with created accounts
+    APP_API_BASE_URL = 'https://plankton-app-3beec.ondigitalocean.app';
+    // Local backend alternative (uncomment if you want to use local XAMPP):
+    // APP_API_BASE_URL = `http://${BACKEND_SERVER_IP}${XAMPP_BASE_PATH}/php/api.php`;
 }
 
 // Expose API base for other scripts (e.g., notifications.js)
@@ -392,5 +394,17 @@ document.addEventListener('DOMContentLoaded', function() {
 // Export for module usage
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = { apiFetch, Storage, Auth, Validation, UI, showNotification };
+}
+
+// Expose functions to global window object for inline scripts
+if (typeof window !== 'undefined') {
+    console.log('Exposing functions to window object...');
+    window.apiFetch = apiFetch;
+    window.Storage = Storage;
+    window.Auth = Auth;
+    window.Validation = Validation;
+    window.UI = UI;
+    window.showNotification = showNotification;
+    console.log('Functions exposed. apiFetch type:', typeof window.apiFetch);
 }
 

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug apiFetch</title>
+</head>
+<body>
+    <h1>Debug apiFetch Loading</h1>
+    <div id="status"></div>
+    <button onclick="checkApiFetch()">Check apiFetch</button>
+
+    <script>
+        function updateStatus(message) {
+            document.getElementById('status').innerHTML += '<p>' + message + '</p>';
+            console.log(message);
+        }
+
+        function checkApiFetch() {
+            updateStatus('Checking apiFetch... Type: ' + typeof window.apiFetch);
+            updateStatus('API Base URL: ' + (window.APP_API_BASE_URL || 'undefined'));
+            updateStatus('Distributed API URL: ' + (window.API_BASE_URL || 'undefined'));
+        }
+
+        // Check periodically
+        let checkCount = 0;
+        function periodicCheck() {
+            checkCount++;
+            updateStatus('Check #' + checkCount + ': apiFetch type = ' + typeof window.apiFetch);
+            
+            if (typeof window.apiFetch === 'function') {
+                updateStatus('✅ apiFetch is available!');
+                return;
+            }
+            
+            if (checkCount < 20) {
+                setTimeout(periodicCheck, 500);
+            } else {
+                updateStatus('❌ Gave up waiting for apiFetch');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStatus('DOM loaded, starting checks...');
+            periodicCheck();
+        });
+    </script>
+    
+    <script src="distributed-config.js" type="module"></script>
+    <script src="js/app.js" type="module"></script>
+</body>
+</html>

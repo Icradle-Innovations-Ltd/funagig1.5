@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test apiFetch</title>
+</head>
+<body>
+    <h1>Testing apiFetch Availability</h1>
+    <div id="status"></div>
+    <button id="testButton">Test apiFetch</button>
+
+    <script>
+        function checkApiFetch() {
+            const status = document.getElementById('status');
+            
+            if (typeof window.apiFetch === 'function') {
+                status.innerHTML = '<p style="color: green;">✅ apiFetch is available!</p>';
+                document.getElementById('testButton').disabled = false;
+            } else {
+                status.innerHTML = '<p style="color: red;">❌ apiFetch not yet available, retrying...</p>';
+                setTimeout(checkApiFetch, 100);
+            }
+        }
+
+        document.getElementById('testButton').addEventListener('click', async function() {
+            try {
+                const response = await window.apiFetch('/login', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        email: 'alice@demo.com',
+                        password: 'demo123'
+                    })
+                });
+                
+                document.getElementById('status').innerHTML += `<p style="color: blue;">API Response: ${JSON.stringify(response)}</p>`;
+            } catch (error) {
+                document.getElementById('status').innerHTML += `<p style="color: orange;">API Error: ${error.message}</p>`;
+            }
+        });
+
+        // Check when DOM loads
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('testButton').disabled = true;
+            checkApiFetch();
+        });
+    </script>
+    
+    <script src="distributed-config.js" type="module"></script>
+    <script src="js/app.js" type="module"></script>
+</body>
+</html>

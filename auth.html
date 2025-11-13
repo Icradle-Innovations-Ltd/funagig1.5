@@ -328,62 +328,77 @@
     </div>
 
     <script>
-        document.getElementById('login-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            clearErrors();
-            
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
-            const rememberMe = document.getElementById('rememberMe').checked;
-            
-            let isValid = true;
-            
-            if (!email) {
-                showError('emailError', 'Email is required');
-                isValid = false;
-            } else if (!isValidEmail(email)) {
-                showError('emailError', 'Please enter a valid email address');
-                isValid = false;
+        // Wait for apiFetch to be available and then setup form handler
+        function initializeLoginForm() {
+            console.log('Checking for apiFetch...', typeof window.apiFetch);
+            if (typeof window.apiFetch === 'undefined') {
+                // Wait a bit more for app.js to load
+                console.log('apiFetch not ready, waiting...');
+                setTimeout(initializeLoginForm, 200);
+                return;
             }
-            
-            if (!password) {
-                showError('passwordError', 'Password is required');
-                isValid = false;
-            }
-            
-            if (isValid) {
-                const loginData = {
-                    email: email,
-                    password: password,
-                    rememberMe: rememberMe,
-                    loginTime: new Date().toISOString()
-                };
+
+            console.log('apiFetch available, setting up form handler');
+            document.getElementById('login-form').addEventListener('submit', function(e) {
+                e.preventDefault();
                 
-                // Use apiFetch from app.js (assumed to exist)
-                apiFetch('/login', {
-                    method: 'POST',
-                    body: JSON.stringify(loginData)
-                })
-                .then(response => {
-                    // Backend returns user type and status
-                    if (response.success) {
-                        // Store user data properly
-                        localStorage.setItem('user', JSON.stringify(response.user));
-                        localStorage.setItem('userType', response.userType);
-                        localStorage.setItem('isLoggedIn', 'true');
-                        alert('Login successful! Redirecting...');
-                        window.location.href = response.userType === 'student' ? 'student-dashboard.html' : 'business-dashboard.html';
-                    } else {
-                        showError('emailError', response.error || 'Login failed');
-                    }
-                })
-                .catch(error => {
-                    showError('emailError', 'Error: Could not connect to server');
-                    console.error('Login error:', error);
-                });
-            }
-        });
+                clearErrors();
+                
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+                const rememberMe = document.getElementById('rememberMe').checked;
+                
+                let isValid = true;
+                
+                if (!email) {
+                    showError('emailError', 'Email is required');
+                    isValid = false;
+                } else if (!isValidEmail(email)) {
+                    showError('emailError', 'Please enter a valid email address');
+                    isValid = false;
+                }
+                
+                if (!password) {
+                    showError('passwordError', 'Password is required');
+                    isValid = false;
+                }
+                
+                if (isValid) {
+                    const loginData = {
+                        email: email,
+                        password: password,
+                        rememberMe: rememberMe,
+                        loginTime: new Date().toISOString()
+                    };
+                    
+                    // Use apiFetch from app.js
+                    window.apiFetch('/login', {
+                        method: 'POST',
+                        body: JSON.stringify(loginData)
+                    })
+                    .then(response => {
+                        // Backend returns user type and status
+                        if (response.success) {
+                            // Store user data properly
+                            localStorage.setItem('user', JSON.stringify(response.user));
+                            localStorage.setItem('userType', response.userType);
+                            localStorage.setItem('isLoggedIn', 'true');
+                            alert('Login successful! Redirecting...');
+                            window.location.href = response.userType === 'student' ? 'student-dashboard.html' : 'business-dashboard.html';
+                        } else {
+                            showError('emailError', response.error || 'Login failed');
+                        }
+                    })
+                    .catch(error => {
+                        showError('emailError', 'Error: Could not connect to server');
+                        console.error('Login error:', error);
+                    });
+                }
+            });
+        }
+
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', initializeLoginForm);
         
         function clearErrors() {
             const errorElements = document.querySelectorAll('.error-message');

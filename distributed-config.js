@@ -6,9 +6,9 @@ const DISTRIBUTED_CONFIG = {
     backend: {
         // Your backend server's IP address
         ip: 'localhost',
-        port: '8080',
+        port: '80',
         // Path to your FunaGig backend
-        path: '/php/api.php'
+        path: '/funagig1.5/php/api.php'
     },
     
     // Frontend Server Configuration  
@@ -28,7 +28,10 @@ const DISTRIBUTED_CONFIG = {
 };
 
 // Generate API URL
-const API_BASE_URL = `http://${DISTRIBUTED_CONFIG.backend.ip}:${DISTRIBUTED_CONFIG.backend.port}${DISTRIBUTED_CONFIG.backend.path}`;
+// For development: use production backend to access test accounts
+const API_BASE_URL = 'https://plankton-app-3beec.ondigitalocean.app';
+// Local backend alternative (uncomment if you have local database with test accounts):
+// const API_BASE_URL = `http://${DISTRIBUTED_CONFIG.backend.ip}:${DISTRIBUTED_CONFIG.backend.port}${DISTRIBUTED_CONFIG.backend.path}`;
 
 // Export for use in other files
 if (typeof module !== 'undefined' && module.exports) {

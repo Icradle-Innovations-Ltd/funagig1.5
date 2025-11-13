@@ -497,7 +497,14 @@
             });
         });
 
-        document.getElementById('signup-form').addEventListener('submit', function(e) {
+        // Setup signup form handler when apiFetch is available
+        function initializeSignupForm() {
+            if (typeof window.apiFetch === 'undefined') {
+                setTimeout(initializeSignupForm, 100);
+                return;
+            }
+
+            document.getElementById('signup-form').addEventListener('submit', function(e) {
             e.preventDefault();
             
             clearErrors();
@@ -583,7 +590,7 @@
             
             if (isValid) {
                 // Send to backend
-                apiFetch('/signup', {
+                window.apiFetch('/signup', {
                     method: 'POST',
                     body: JSON.stringify(formData)
                 })
@@ -601,6 +608,9 @@
                 });
             }
         });
+        
+        // Initialize signup form when DOM is ready
+        initializeSignupForm();
         
         function clearErrors() {
             const errorElements = document.querySelectorAll('.error-message');
