@@ -98,7 +98,9 @@
             if (user) {
                 // Check if user is a student
                 if (user.type !== 'student') {
-                    showNotification('Access denied. This page is for students only.', 'error');
+                    if (typeof showNotification !== 'undefined') {
+                        showNotification('Access denied. This page is for students only.', 'error');
+                    }
                     window.location.href = user.type === 'business' ? 'business-dashboard.html' : 'auth.html';
                     return;
                 }
@@ -121,17 +123,32 @@
                 // Load dashboard data
                 loadDashboardData();
             }
-        });
+        }
+        
+        // Wait for Auth to be available
+        if (typeof Auth !== 'undefined') {
+            initDashboard();
+        } else {
+            window.addEventListener('appReady', initDashboard);
+        }
         
         async function loadDashboardData() {
             try {
+                // Check if apiFetch is available
+                if (typeof apiFetch === 'undefined') {
+                    console.error('apiFetch is not available');
+                    return;
+                }
+                
                 const response = await apiFetch('/dashboard');
                 if (response.success) {
                     updateDashboardStats(response.stats);
                 }
             } catch (error) {
                 console.error('Failed to load dashboard data:', error);
-                showNotification('Failed to load dashboard data', 'error');
+                if (typeof showNotification !== 'undefined') {
+                    showNotification('Failed to load dashboard data', 'error');
+                }
             }
         }
         
