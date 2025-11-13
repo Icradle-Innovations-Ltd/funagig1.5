@@ -1,6 +1,21 @@
 # FunaGig Production Security Configuration
 # Apache .htaccess file for enhanced security
 
+# API Routing - Handle all requests through PHP API
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Handle CORS preflight requests
+    RewriteCond %{REQUEST_METHOD} OPTIONS
+    RewriteRule ^(.*)$ php/api.php [L]
+    
+    # Route all requests to php/api.php
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} !^/php/
+    RewriteRule ^(.*)$ php/api.php [L,QSA]
+</IfModule>
+
 # Prevent access to sensitive files
 <FilesMatch "\.(env|log|sql|md|json|lock)$">
     Require all denied

@@ -1,18 +1,18 @@
-name: funagig
+name: funagig-backend
 services:
-- name: backend
+- name: api
   source_dir: /
   github:
     repo: Icradle-Innovations-Ltd/funagig1.5
     branch: master
   build_command: echo "No build needed for PHP"
-  run_command: vendor/bin/heroku-php-apache2 /
+  run_command: vendor/bin/heroku-php-apache2 php/
   environment_slug: php
   instance_count: 1
   instance_size_slug: basic-xxs
+  http_port: 8080
   routes:
-  - path: /api
-    preserve_path_prefix: true
+  - path: /
   envs:
   - key: DB_HOST
     value: your-database-host.ondigitalocean.com
@@ -30,17 +30,7 @@ services:
     value: "true"
   - key: DEBUG_MODE
     value: "false"
-
-static_sites:
-- name: frontend
-  source_dir: /
-  github:
-    repo: Icradle-Innovations-Ltd/funagig1.5
-    branch: master
-  build_command: npm install && npm run build
-  output_dir: /dist
-  routes:
-  - path: /
-  envs:
-  - key: VITE_API_BASE_URL
-    value: ${backend.PUBLIC_URL}/api
+  - key: APP_URL
+    value: ${_self.PUBLIC_URL}
+  - key: HTTPS_REQUIRED
+    value: "true"
