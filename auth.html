@@ -445,16 +445,28 @@
                 } else if (attempts >= maxAttempts) {
                     clearInterval(checkInterval);
                     console.error('apiFetch failed to load after', maxAttempts, 'attempts');
-                    document.querySelector('.card').innerHTML = `
-                        <h2 style="color: #e53e3e;">Loading Error</h2>
-                        <p>Unable to load the application. Please try:</p>
-                        <ul style="text-align: left;">
-                            <li>Refreshing the page</li>
-                            <li>Clearing your browser cache</li>
-                            <li>Trying a different browser</li>
-                        </ul>
-                        <button onclick="window.location.reload()" style="margin-top: 10px;">Refresh Page</button>
-                    `;
+                    const cardElement = document.querySelector('.card');
+                    if (cardElement) {
+                        cardElement.innerHTML = `
+                            <h2 style="color: #e53e3e;">Loading Error</h2>
+                            <p>Unable to load the application. Please try:</p>
+                            <ul style="text-align: left;">
+                                <li>Refreshing the page</li>
+                                <li>Clearing your browser cache</li>
+                                <li>Trying a different browser</li>
+                            </ul>
+                            <button onclick="window.location.reload()" style="margin-top: 10px;">Refresh Page</button>
+                        `;
+                    } else {
+                        // Fallback if no .card element found
+                        document.body.innerHTML = `
+                            <div style="text-align: center; padding: 40px; font-family: Arial, sans-serif;">
+                                <h2 style="color: #e53e3e;">Loading Error</h2>
+                                <p>Unable to load the application. Please refresh the page.</p>
+                                <button onclick="window.location.reload()" style="padding: 10px 20px; font-size: 16px;">Refresh Page</button>
+                            </div>
+                        `;
+                    }
                 }
             }, 200);
         }
@@ -538,19 +550,56 @@
     <script src="js/app.js" type="module"></script>
     <!-- Fallback for production if modules don't load -->
     <script>
-        // If modules didn't load after 3 seconds, try loading as regular script
+        // If modules didn't load after 3 seconds, try alternative approach
         setTimeout(() => {
             if (typeof window.apiFetch === 'undefined') {
                 console.log('ES6 modules failed, trying fallback loading...');
-                const script = document.createElement('script');
-                script.src = 'js/app.js';
-                script.onload = () => {
-                    console.log('Fallback script loaded');
+                // Instead of loading the same file, create a minimal fallback
+                window.apiFetch = function(url, options = {}) {
+                    const baseUrl = 'https://plankton-app-3beec.ondigitalocean.app';
+                    const fullUrl = baseUrl + (url.startsWith('/') ? url : '/' + url);
+                    
+                    // Convert to FormData for auth endpoints to avoid CORS preflight
+                    if (url.includes('/login') || url.includes('/signup')) {
+                        const formData = new FormData();
+                        if (options.body) {
+                            try {
+                                const data = JSON.parse(options.body);
+                                Object.keys(data).forEach(key => {
+                                    formData.append(key, data[key]);
+                                });
+                                options.body = formData;
+                            } catch (e) {
+                                // Keep original body if JSON parsing fails
+                            }
+                        }
+                        delete options.headers; // Remove headers to use browser defaults
+                    }
+                    
+                    return fetch(fullUrl, {
+                        credentials: 'include',
+                        ...options
+                    }).then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                        }
+                        return response.json();
+                    });
                 };
-                script.onerror = () => {
-                    console.error('Both module and fallback loading failed');
+                
+                // Add minimal utility functions
+                window.Storage = {
+                    get: (key) => localStorage.getItem(key),
+                    set: (key, value) => localStorage.setItem(key, value),
+                    remove: (key) => localStorage.removeItem(key)
                 };
-                document.head.appendChild(script);
+                
+                console.log('Fallback apiFetch created');
+                
+                // Dispatch ready event
+                window.dispatchEvent(new CustomEvent('appReady', { 
+                    detail: { apiFetch: window.apiFetch, Storage: window.Storage }
+                }));
             }
         }, 3000);
     </script>

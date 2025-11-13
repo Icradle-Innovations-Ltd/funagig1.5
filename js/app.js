@@ -6,12 +6,18 @@
 // Development: Uses local XAMPP server
 
 // Check for Vite environment variables first (production)
-// Use try-catch to handle both module and non-module environments
+// Completely avoid import.meta to prevent syntax errors in non-module contexts
 let VITE_API_BASE_URL;
-try {
-    VITE_API_BASE_URL = (import.meta && import.meta.env) ? import.meta.env.VITE_API_BASE_URL : undefined;
-} catch (e) {
-    VITE_API_BASE_URL = undefined;
+
+// Check for environment variables through meta tag or global variable
+if (typeof document !== 'undefined') {
+    const metaTag = document.querySelector('meta[name="vite-api-base-url"]');
+    VITE_API_BASE_URL = metaTag ? metaTag.content : undefined;
+    
+    // Also check for global VITE_API_BASE_URL variable
+    if (!VITE_API_BASE_URL && typeof window !== 'undefined' && window.VITE_API_BASE_URL) {
+        VITE_API_BASE_URL = window.VITE_API_BASE_URL;
+    }
 }
 
 // Development fallback configuration
