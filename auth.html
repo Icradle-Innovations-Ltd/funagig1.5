@@ -363,6 +363,12 @@
                         loginTime: new Date().toISOString()
                     };
                     
+                    // Disable submit button to prevent multiple submissions
+                    const submitBtn = document.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.textContent;
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Logging in...';
+                    
                     // Use apiFetch from app.js
                     window.apiFetch('/login', {
                         method: 'POST',
@@ -375,15 +381,25 @@
                             localStorage.setItem('user', JSON.stringify(response.user));
                             localStorage.setItem('userType', response.userType);
                             localStorage.setItem('isLoggedIn', 'true');
-                            alert('Login successful! Redirecting...');
-                            window.location.href = response.userType === 'student' ? 'student-dashboard.html' : 'business-dashboard.html';
+                            showError('emailError', '✅ Login successful! Redirecting...');
+                            submitBtn.textContent = 'Redirecting...';
+                            setTimeout(() => {
+                                window.location.href = response.userType === 'student' ? 'student-dashboard.html' : 'business-dashboard.html';
+                            }, 1000);
                         } else {
                             showError('emailError', response.error || 'Login failed');
                         }
                     })
                     .catch(error => {
-                        showError('emailError', 'Error: Could not connect to server');
+                        // Show the actual error message from the API
+                        const errorMessage = error.message || 'Could not connect to server';
+                        showError('emailError', errorMessage);
                         console.error('Login error:', error);
+                    })
+                    .finally(() => {
+                        // Re-enable submit button
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = originalText;
                     });
                 }
             });
@@ -404,7 +420,12 @@
             const errorElement = document.getElementById(elementId);
             errorElement.textContent = message;
             errorElement.style.display = 'block';
-            errorElement.style.color = '#e53e3e';
+            // Set color based on message type
+            if (message.startsWith('✅')) {
+                errorElement.style.color = '#10b981'; // Green for success
+            } else {
+                errorElement.style.color = '#e53e3e'; // Red for errors
+            }
             errorElement.style.fontSize = '12px';
             errorElement.style.marginTop = '5px';
         }
