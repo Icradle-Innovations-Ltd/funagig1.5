@@ -10,9 +10,6 @@ define('DB_PASS', getenv('DB_PASS') ?: '97swain'); // Use environment variables 
 define('DB_PORT', (int)(getenv('DB_PORT') ?: 3306));
 define('DB_SSL', getenv('DB_SSL') === 'true');
 define('DB_SSL_MODE', getenv('DB_SSL_MODE') ?: 'PREFERRED');
-define('DB_PORT', getenv('DB_PORT') ?: 3306);
-define('DB_SSL', getenv('DB_SSL') === 'true');
-define('DB_SSL_MODE', getenv('DB_SSL_MODE') ?: 'PREFERRED');
 
 // Application configuration
 define('APP_NAME', 'FunaGig');
@@ -408,7 +405,9 @@ function checkSessionTimeout() {
 // CORS headers for API - Configure for distributed deployment
 $allowedOrigins = [
     'http://localhost:3000',
+    'http://localhost:3001',
     'http://127.0.0.1:3000',
+    'http://127.0.0.1:3001',
     'http://192.168.1.100:3000',
     'http://192.168.1.101:3000',
     'http://192.168.1.138:3000',
