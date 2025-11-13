@@ -499,10 +499,6 @@
 
         // Setup signup form handler when apiFetch is available
         function initializeSignupForm() {
-            if (typeof window.apiFetch === 'undefined') {
-                setTimeout(initializeSignupForm, 100);
-                return;
-            }
 
             document.getElementById('signup-form').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -610,7 +606,17 @@
         });
         
         // Initialize signup form when DOM is ready
-        initializeSignupForm();
+        // Listen for the app ready event or check if functions are already available
+        if (typeof window.apiFetch !== 'undefined') {
+            // Functions already available
+            initializeSignupForm();
+        } else {
+            // Wait for the app ready event
+            window.addEventListener('appReady', function() {
+                console.log('App ready event received in signup');
+                initializeSignupForm();
+            });
+        }
         
         function clearErrors() {
             const errorElements = document.querySelectorAll('.error-message');

@@ -328,17 +328,9 @@
     </div>
 
     <script>
-        // Wait for apiFetch to be available and then setup form handler
+        // Initialize when app.js is ready
         function initializeLoginForm() {
-            console.log('Checking for apiFetch...', typeof window.apiFetch);
-            if (typeof window.apiFetch === 'undefined') {
-                // Wait a bit more for app.js to load
-                console.log('apiFetch not ready, waiting...');
-                setTimeout(initializeLoginForm, 200);
-                return;
-            }
-
-            console.log('apiFetch available, setting up form handler');
+            console.log('Setting up login form handler');
             document.getElementById('login-form').addEventListener('submit', function(e) {
                 e.preventDefault();
                 
@@ -420,6 +412,18 @@
         function isValidEmail(email) {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             return emailRegex.test(email);
+        }
+
+        // Listen for the app ready event or check if functions are already available
+        if (typeof window.apiFetch !== 'undefined') {
+            // Functions already available
+            initializeLoginForm();
+        } else {
+            // Wait for the app ready event
+            window.addEventListener('appReady', function() {
+                console.log('App ready event received');
+                initializeLoginForm();
+            });
         }
     </script>
     <script src="distributed-config.js" type="module"></script>

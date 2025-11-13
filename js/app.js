@@ -407,5 +407,11 @@ if (typeof window !== 'undefined') {
     window.UI = UI;
     window.showNotification = showNotification;
     console.log('Functions exposed. apiFetch type:', typeof window.apiFetch);
+    
+    // Dispatch a custom event to notify that functions are ready
+    window.dispatchEvent(new CustomEvent('appReady', { 
+        detail: { apiFetch, Storage, Auth, Validation, UI, showNotification }
+    }));
+    console.log('App ready event dispatched');
 }
 
