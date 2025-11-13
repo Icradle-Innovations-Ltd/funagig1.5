@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Data Processing Addendum (DPA) - FunaGig</title>
+    <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+    <header class="navbar">
+        <div class="brand">
+            <div class="logo"></div> FunaGig
+        </div>
+        <nav class="nav">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="privacy.html" class="nav-link">Privacy</a>
+            <a href="terms.html" class="nav-link">Terms</a>
+        </nav>
+    </header>
+
+    <main class="content" style="max-width:900px;margin:24px auto;">
+        <h1 class="h1">Data Processing Addendum (DPA)</h1>
+        <p class="subtle">Last updated: <span id="last-updated"></span></p>
+
+        <div class="section">
+            <h2 class="h2">1. Scope</h2>
+            <p>This DPA forms part of the Terms and governs FunaGig’s processing of personal data on behalf of Customers under applicable data protection laws (e.g., GDPR, UK GDPR, and similar frameworks).</p>
+        </div>
+
+        <div class="section">
+            <h2 class="h2">2. Roles</h2>
+            <p>The Customer is the Data Controller; FunaGig is the Data Processor. Each party shall comply with its respective obligations under data protection laws.</p>
+        </div>
+
+        <div class="section">
+            <h2 class="h2">3. Processing Details</h2>
+            <ul>
+                <li><strong>Subject Matter</strong>: Provision of the FunaGig platform and related services.</li>
+                <li><strong>Duration</strong>: For the term of the Customer’s use of the Service.</li>
+                <li><strong>Nature and Purpose</strong>: Hosting, transmission, storage, and management of account and platform data to enable the Service.</li>
+                <li><strong>Types of Personal Data</strong>: Name, email, role, and optional profile information (e.g., university/major or industry), usage metadata.</li>
+                <li><strong>Data Subjects</strong>: Customer personnel, students, and business users.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2 class="h2">4. Processor Obligations</h2>
+            <ul>
+                <li>Process personal data only on documented instructions from the Controller.</li>
+                <li>Maintain appropriate technical and organizational security measures.</li>
+                <li>Ensure personnel confidentiality and limit access on a need‑to‑know basis.</li>
+                <li>Assist the Controller with data subject requests and security obligations where feasible.</li>
+                <li>Notify the Controller without undue delay after becoming aware of a personal data breach.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2 class="h2">5. Sub‑processors</h2>
+            <p>FunaGig may engage sub‑processors to support the Service. A current list is maintained in the Privacy Policy. Processor remains responsible for sub‑processors’ obligations.</p>
+        </div>
+
+        <div class="section">
+            <h2 class="h2">6. International Transfers</h2>
+            <p>Where personal data is transferred internationally, Processor will implement appropriate safeguards (e.g., SCCs) as required by applicable law.</p>
+        </div>
+
+        <div class="section">
+            <h2 class="h2">7. Data Return/Deletion</h2>
+            <p>Upon termination, Processor will delete or return personal data at Controller’s choice, unless retention is required by law.</p>
+        </div>
+
+        <div class="section">
+            <h2 class="h2">8. Audit</h2>
+            <p>Processor shall make available information necessary to demonstrate compliance and allow for audits by the Controller or an auditor mandated by the Controller, subject to reasonable limits to protect confidentiality and security.</p>
+        </div>
+
+        <div class="section" style="text-align:center;">
+            <a class="btn secondary" href="privacy.html">View Privacy Policy</a>
+            <a class="btn" href="signup.html" style="margin-left:8px;">Proceed to Sign Up</a>
+        </div>
+    </main>
+
+    <script src="js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function(){
+            const d = new Date();
+            document.getElementById('last-updated').textContent = d.toLocaleDateString();
+        });
+    </script>
+</body>
+</html>
+
+

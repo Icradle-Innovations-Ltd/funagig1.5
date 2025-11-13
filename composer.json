@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "heroku-postbuild": "echo 'No build needed for PHP'"
+  },
+  "engines": {
+    "php": "8.2.x"
+  }
+}

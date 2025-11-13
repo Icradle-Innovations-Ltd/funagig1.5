@@ -1,0 +1,46 @@
+name: funagig
+services:
+- name: backend
+  source_dir: /
+  github:
+    repo: yourusername/funagig
+    branch: main
+  build_command: echo "No build needed for PHP"
+  run_command: vendor/bin/heroku-php-apache2 /
+  environment_slug: php
+  instance_count: 1
+  instance_size_slug: basic-xxs
+  routes:
+  - path: /api
+    preserve_path_prefix: true
+  envs:
+  - key: DB_HOST
+    value: db-mysql-nyc3-54879-do-user-22777945-0.l.db.ondigitalocean.com
+  - key: DB_PORT
+    value: "25060"
+  - key: DB_USER
+    value: doadmin
+  - key: DB_PASS
+    value: AVNS_rESJD28uBjcQ8rmg5ti
+  - key: DB_NAME
+    value: funagig
+  - key: DB_SSL
+    value: "false"
+  - key: PRODUCTION_MODE
+    value: "true"
+  - key: DEBUG_MODE
+    value: "false"
+
+static_sites:
+- name: frontend
+  source_dir: /
+  github:
+    repo: yourusername/funagig
+    branch: main
+  build_command: npm install && npm run build
+  output_dir: /dist
+  routes:
+  - path: /
+  envs:
+  - key: VITE_API_BASE_URL
+    value: ${backend.PUBLIC_URL}/api

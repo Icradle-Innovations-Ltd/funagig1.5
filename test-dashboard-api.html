@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard API Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+        pre { background: #f5f5f5; padding: 10px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>Dashboard API Test</h1>
+    <p>This page tests the dashboard API directly without any caching issues.</p>
+    
+    <div id="results"></div>
+    
+    <script src="js/app.js?v=test"></script>
+    <script>
+        async function testDashboardAPI() {
+            const resultsDiv = document.getElementById('results');
+            
+            try {
+                console.log('Testing dashboard API...');
+                
+                // Test API call
+                const response = await apiFetch('/dashboard');
+                console.log('API Response:', response);
+                
+                if (response.success && response.stats) {
+                    resultsDiv.innerHTML = `
+                        <h2 class="success">✅ API Test Successful!</h2>
+                        <h3>Dashboard Stats:</h3>
+                        <pre>${JSON.stringify(response.stats, null, 2)}</pre>
+                        <h3>Property Names Check:</h3>
+                        <ul>
+                            <li>active_gigs: ${response.stats.active_gigs}</li>
+                            <li>total_applicants: ${response.stats.total_applicants}</li>
+                            <li>hired_students: ${response.stats.hired_students}</li>
+                            <li>completed_projects: ${response.stats.completed_projects}</li>
+                        </ul>
+                        <p class="success">All property names are correct (snake_case)!</p>
+                    `;
+                } else {
+                    resultsDiv.innerHTML = `
+                        <h2 class="error">❌ API Test Failed</h2>
+                        <pre>${JSON.stringify(response, null, 2)}</pre>
+                    `;
+                }
+                
+            } catch (error) {
+                console.error('API Test Error:', error);
+                resultsDiv.innerHTML = `
+                    <h2 class="error">❌ API Test Error</h2>
+                `;
+                const errorMsg = document.createElement('p');
+                errorMsg.textContent = `Error: ${error.message}`;
+                resultsDiv.appendChild(errorMsg);
+            }
+        }
+        
+        // Run test when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 API Test Page Loaded');
+            testDashboardAPI();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Privacy Policy - FunaGig</title>
+    <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+    <header class="navbar">
+        <div class="brand">
+            <div class="logo"></div> FunaGig
+        </div>
+        <nav class="nav">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="terms.html" class="nav-link">Terms</a>
+        </nav>
+    </header>
+
+    <main class="content" style="max-width:900px;margin:24px auto;">
+        <h1 class="h1">Privacy Policy</h1>
+        <p class="subtle">Last updated: <span id="last-updated"></span></p>
+
+        <div class="section">
+            <h2 class="h2">1. Overview</h2>
+            <p>This Privacy Policy explains how FunaGig collects, uses, and protects your information when you use our Service.</p>
+        </div>
+
+        <div class="section">
+            <h2 class="h2">2. Information We Collect</h2>
+            <ul>
+                <li>Account data (name, email, role and optional profile details).</li>
+                <li>Usage data (pages visited, actions taken) for improving the Service.</li>
+                <li>Cookies/session identifiers to keep you signed in and secure your session.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2 class="h2">3. How We Use Information</h2>
+            <ul>
+                <li>Provide and maintain the Service, including authentication and sessions.</li>
+                <li>Communicate with you (notifications, service messages).</li>
+                <li>Protect against fraud, abuse, and security incidents.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2 class="h2">4. Cookies and Storage</h2>
+            <p>We use session cookies (e.g., <code>PHPSESSID</code>) and a site cookie (<code>funagig_session</code>) to authenticate and keep you logged in. LocalStorage is used for non-sensitive preferences.</p>
+        </div>
+
+        <div class="section">
+            <h2 class="h2">5. Data Sharing</h2>
+            <p>We do not sell your personal data. We may share limited data with service providers strictly for operating the Service, subject to confidentiality obligations.</p>
+        </div>
+
+        <div class="section">
+            <h2 class="h2">6. Sub‑processors</h2>
+            <p>We may use third‑party providers to operate the Service. Examples (subject to change):</p>
+            <ul>
+                <li>Email delivery (configured SMTP provider).</li>
+                <li>Hosting/Infrastructure (your current hosting environment).</li>
+                <li>Analytics/Logging (if enabled in your deployment).</li>
+            </ul>
+            <p>See our <a href="dpa.html">Data Processing Addendum</a> for processing details.</p>
+        </div>
+
+        <div class="section">
+            <h2 class="h2">7. Data Retention</h2>
+            <p>We retain information as long as needed to provide the Service and as required by law. You may request deletion of your account subject to legal and operational constraints.</p>
+        </div>
+
+        <div class="section">
+            <h2 class="h2">8. Your Rights</h2>
+            <ul>
+                <li>Access, update, or delete your account information.</li>
+                <li>Opt out of non-essential communications.</li>
+                <li>Request a copy of the data we hold about you (where applicable).</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2 class="h2">9. Security</h2>
+            <p>We apply reasonable administrative, technical, and physical safeguards to protect information. No method of transmission or storage is 100% secure.</p>
+        </div>
+
+        <div class="section">
+            <h2 class="h2">10. Changes</h2>
+            <p>We may update this policy. Material changes will be posted on this page. Continued use of the Service after updates constitutes acceptance.</p>
+        </div>
+
+        <div class="section">
+            <h2 class="h2">11. Contact</h2>
+            <p>For privacy inquiries, contact <a href="mailto:privacy@funagig.com">privacy@funagig.com</a>.</p>
+        </div>
+
+        <div class="section" style="text-align:center;">
+            <a class="btn secondary" href="terms.html">View Terms</a>
+            <a class="btn" href="index.html" style="margin-left:8px;">Back to Home</a>
+        </div>
+    </main>
+
+    <script src="js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function(){
+            const d = new Date();
+            document.getElementById('last-updated').textContent = d.toLocaleDateString();
+        });
+    </script>
+</body>
+</html>
+
+

@@ -1,0 +1,43 @@
+# DigitalOcean App Platform Specification
+# This file configures your app for DigitalOcean App Platform deployment
+
+name: funagig
+services:
+- name: web
+  source_dir: /
+  github:
+    repo: yourusername/funagig  # Replace with your GitHub repo
+    branch: main
+  run_command: php -S 0.0.0.0:$PORT php/api.php
+  environment_slug: php
+  instance_count: 1
+  instance_size_slug: basic-xxs
+  http_port: 8080
+  routes:
+  - path: /
+  health_check:
+    http_path: /php/api.php
+  envs:
+  - key: APP_URL
+    value: ${_self.PUBLIC_URL}
+  - key: HTTPS_REQUIRED
+    value: "true"
+  - key: PRODUCTION_MODE
+    value: "true"
+  - key: DEBUG_MODE
+    value: "false"
+  - key: DB_HOST
+    value: ${funagig-db.HOSTNAME}
+  - key: DB_NAME
+    value: ${funagig-db.DATABASE}
+  - key: DB_USER
+    value: ${funagig-db.USERNAME}
+  - key: DB_PASS
+    value: ${funagig-db.PASSWORD}
+
+databases:
+- name: funagig-db
+  engine: MYSQL
+  version: "8"
+  production: false  # Set to true for production
+  cluster_name: funagig-mysql-cluster

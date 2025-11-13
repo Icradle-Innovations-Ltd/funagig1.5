@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>Business Dashboard - FunaGig (COMPLETELY NEW)</title>
+    <link rel="stylesheet" href="css/styles.css?v=999" />
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="brand">
+            <div class="logo"></div> FunaGig
+        </div>
+    </header>
+    <div class="app-layout">
+        <aside class="sidebar">
+            <div class="title" style="display:flex; align-items:center; gap:10px;">
+                <div class="cover-img" style="width:36px;height:36px;">TS</div> Tech Solutions Inc.
+            </div>
+            <nav class="navlist">
+                <a class="navitem active" href="business-dashboard.html">Dashboard</a>
+                <a class="navitem" href="post-gig.html">Post Gig</a>
+                <a class="navitem" href="business-gigs.html">My Gigs</a>
+                <a class="navitem" href="business-messaging.html">Messages</a>
+                <a class="navitem" href="business-profile.html">Profile</a>
+                <a class="navitem" href="notifications.html">
+                    Notifications
+                    <span class="notification-badge" id="notification-badge" style="display: none;">0</span>
+                </a>
+                <a class="navitem" href="#" onclick="Auth.logout(); return false;">Log out</a>
+            </nav>
+        </aside>
+        <main class="content">
+            <div class="section">
+                <div class="flex items-center justify-between mb-20">
+                    <div>
+                        <h1 class="h1" style="font-size:28px; margin:0;">Business Dashboard (COMPLETELY NEW FILE)</h1>
+                        <p class="subtle">Manage your gigs, applicants, and business performance - This is a brand new file!</p>
+                    </div>
+                    <div class="flex gap-10">
+                        <a href="post-gig.html" class="btn">Post New Gig</a>
+                        <a href="business-profile.html" class="btn secondary">Edit Profile</a>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="grid-4">
+                    <div class="section">
+                        <div style="font-size:32px; color:var(--primary);">0</div>
+                        <p>Active Gigs</p>
+                    </div>
+                    <div class="section">
+                        <div style="font-size:32px; color:var(--warning);">0</div>
+                        <p>Total Applicants</p>
+                    </div>
+                    <div class="section">
+                        <div style="font-size:32px; color:var(--success);">0</div>
+                        <p>Hired Students</p>
+                    </div>
+                    <div class="section">
+                        <div style="font-size:32px; color:var(--info);">0</div>
+                        <p>Completed Projects</p>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="section mt-20">
+                    <h2 class="h2">Recent Activity</h2>
+                    <div class="card">
+                        <p class="subtle">No recent activity. Start by posting your first gig!</p>
+                        <div class="mt-10">
+                            <a href="post-gig.html" class="btn">Post Your First Gig</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="section mt-20">
+                    <h2 class="h2">Quick Actions</h2>
+                    <div class="grid-3">
+                        <div class="card">
+                            <h3>Post New Gig</h3>
+                            <p class="subtle">Create a new job posting to attract student talent</p>
+                            <a href="post-gig.html" class="btn">Post Gig</a>
+                        </div>
+                        <div class="card">
+                            <h3>View My Gigs</h3>
+                            <p class="subtle">Manage your existing gig postings</p>
+                            <a href="business-gigs.html" class="btn secondary">View Gigs</a>
+                        </div>
+                        <div class="card">
+                            <h3>Messages</h3>
+                            <p class="subtle">Communicate with students</p>
+                            <a href="business-messaging.html" class="btn secondary">View Messages</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Overview -->
+                <div class="section mt-20">
+                    <h2 class="h2">Performance Overview</h2>
+                    <div class="grid-2">
+                        <div class="card">
+                            <h3>Gig Performance</h3>
+                            <p class="subtle">Track how your gigs are performing</p>
+                            <div class="mt-10">
+                                <div class="flex justify-between">
+                                    <span>Total Views:</span>
+                                    <span>0</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Applications:</span>
+                                    <span>0</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Hire Rate:</span>
+                                    <span>0%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3>Student Engagement</h3>
+                            <p class="subtle">Monitor student interest in your gigs</p>
+                            <div class="mt-10">
+                                <div class="flex justify-between">
+                                    <span>Active Conversations:</span>
+                                    <span>0</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Response Rate:</span>
+                                    <span>0%</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Average Rating:</span>
+                                    <span>0.0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // COMPLETELY NEW DASHBOARD SCRIPT - NO CACHING ISSUES
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎉 COMPLETELY NEW DASHBOARD LOADED - NO MORE ERRORS!');
+            console.log('This is a brand new file with fresh JavaScript!');
+            
+            // Check if user is logged in
+            if (!Auth.isLoggedIn()) {
+                window.location.href = 'auth.html';
+                return;
+            }
+            
+            const user = Auth.getUser();
+            if (user) {
+                // Check if user is a business
+                if (user.type !== 'business') {
+                    showNotification('Access denied. This page is for businesses only.', 'error');
+                    window.location.href = user.type === 'student' ? 'student-dashboard.html' : 'auth.html';
+                    return;
+                }
+                
+                // Update user name in sidebar
+                const userName = user.name;
+                const userInitials = userName.split(' ').map(n => n[0]).join('').toUpperCase();
+                
+                // Update sidebar
+                const sidebarTitle = document.querySelector('.sidebar .title');
+                if (sidebarTitle) {
+                    sidebarTitle.innerHTML = `<div class="cover-img" style="width:36px;height:36px;">${userInitials}</div> ${userName}`;
+                }
+                
+                // Load dashboard data
+                loadDashboardData();
+            }
+        });
+        
+        async function loadDashboardData() {
+            console.log('🔄 Loading dashboard data from API...');
+            try {
+                const response = await apiFetch('/dashboard');
+                console.log('📊 API Response:', response);
+                
+                if (response.success && response.stats) {
+                    console.log('✅ Stats received:', response.stats);
+                    updateDashboardStats(response.stats);
+                } else {
+                    console.error('❌ Invalid API response:', response);
+                    showNotification('Invalid dashboard data received', 'error');
+                }
+            } catch (error) {
+                console.error('❌ API Error:', error);
+                showNotification('Failed to load dashboard data', 'error');
+            }
+        }
+        
+        function updateDashboardStats(stats) {
+            console.log('📈 Updating dashboard with stats:', stats);
+            
+            if (!stats) {
+                console.error('❌ No stats provided');
+                return;
+            }
+            
+            // Handle both camelCase and snake_case property names for compatibility
+            const activeGigs = stats.active_gigs || stats.activeGigs || 0;
+            const totalApplicants = stats.total_applicants || stats.totalApplications || 0;
+            const hiredStudents = stats.hired_students || stats.hiredStudents || 0;
+            const completedProjects = stats.completed_projects || stats.completedProjects || 0;
+            const averageRating = stats.average_rating || stats.averageRating || 4.6;
+            const totalRevenue = stats.total_revenue || stats.totalRevenue || 0;
+            const activeStudents = stats.active_students || stats.activeStudents || 0;
+            
+            console.log('📊 Processed stats:', {
+                activeGigs, totalApplicants, hiredStudents, completedProjects, 
+                averageRating, totalRevenue, activeStudents
+            });
+            
+            // Update active gigs
+            const activeGigsElement = document.querySelector('.grid-4 .section:nth-child(1) div');
+            if (activeGigsElement) {
+                activeGigsElement.textContent = activeGigs;
+                console.log('✅ Updated active gigs:', activeGigs);
+            }
+            
+            // Update total applicants
+            const totalApplicantsElement = document.querySelector('.grid-4 .section:nth-child(2) div');
+            if (totalApplicantsElement) {
+                totalApplicantsElement.textContent = totalApplicants;
+                console.log('✅ Updated total applicants:', totalApplicants);
+            }
+            
+            // Update hired students
+            const hiredStudentsElement = document.querySelector('.grid-4 .section:nth-child(3) div');
+            if (hiredStudentsElement) {
+                hiredStudentsElement.textContent = hiredStudents;
+                console.log('✅ Updated hired students:', hiredStudents);
+            }
+            
+            // Update completed projects
+            const completedProjectsElement = document.querySelector('.grid-4 .section:nth-child(4) div');
+            if (completedProjectsElement) {
+                completedProjectsElement.textContent = completedProjects;
+                console.log('✅ Updated completed projects:', completedProjects);
+            }
+            
+            console.log('🎉 Dashboard updated successfully!');
+        }
+    </script>
+    <script src="js/app.js?v=999"></script>
+    <script src="js/notifications.js?v=999"></script>
+</body>
+
+</html>

@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Create Account - FunaGig</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+            padding: 20px;
+        }
+        
+        .auth-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+        
+        .auth-card {
+            background: rgba(255, 255, 255, 0.95);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .auth-logo {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .auth-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+        
+        .auth-subtitle {
+            color: #718096;
+            font-size: 16px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .form-input, .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+        
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .role-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .role-option {
+            padding: 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: #f8fafc;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            position: relative;
+        }
+        
+        .role-option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        
+        .role-option.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        
+        .role-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .role-option .role-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .role-option .role-label {
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 14px;
+        }
+        
+        .form-checkbox {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            background: #f8fafc;
+        }
+        
+        .form-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #667eea;
+            margin-top: 2px;
+        }
+        
+        .form-checkbox label {
+            color: #4a5568;
+            font-size: 14px;
+            line-height: 1.4;
+            cursor: pointer;
+        }
+        
+        .form-checkbox a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        .form-checkbox a:hover {
+            text-decoration: underline;
+        }
+        
+        .auth-button {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+        
+        .auth-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .auth-button:active {
+            transform: translateY(0);
+        }
+        
+        .auth-footer {
+            text-align: center;
+            color: #718096;
+            font-size: 14px;
+        }
+        
+        .auth-footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            color: #e53e3e;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .back-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 2;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        .benefits-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+        }
+        
+        .benefits-title {
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .benefits-list {
+            display: grid;
+            gap: 10px;
+        }
+        
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .benefit-icon {
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        @media (max-width: 768px) {
+            .auth-card {
+                margin: 10px;
+                padding: 30px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .role-selector {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="auth-container">
+        <a href="index.html" class="back-link">
+            ← Back to Home
+        </a>
+        
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-logo">F</div>
+                <h1 class="auth-title">Create Your Account</h1>
+                <p class="auth-subtitle">Join FunaGig as a Student or Business</p>
+            </div>
+            
+            <form id="signup-form">
+                <!-- Role Selection -->
+                <div class="form-group">
+                    <label class="form-label">I am a *</label>
+                    <div class="role-selector">
+                        <label class="role-option" for="role-student">
+                            <input type="radio" id="role-student" name="role" value="student" required />
+                            <span class="role-icon">🎓</span>
+                            <span class="role-label">Student</span>
+                        </label>
+                        <label class="role-option" for="role-business">
+                            <input type="radio" id="role-business" name="role" value="business" required />
+                            <span class="role-icon">🏢</span>
+                            <span class="role-label">Business</span>
+                        </label>
+                    </div>
+                    <div class="error-message" id="roleError"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Full Name (or Company Name) *</label>
+                    <input type="text" class="form-input" id="name" placeholder="e.g. Your Name or Your Company Inc." required />
+                    <div class="error-message" id="nameError"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Email Address *</label>
+                    <input type="email" class="form-input" id="email" placeholder="you@example.com" required />
+                    <div class="error-message" id="emailError"></div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Password *</label>
+                        <input type="password" class="form-input" id="password" placeholder="••••••••" required />
+                        <div class="error-message" id="passwordError"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Confirm Password *</label>
+                        <input type="password" class="form-input" id="confirmPassword" placeholder="••••••••" required />
+                        <div class="error-message" id="confirmPasswordError"></div>
+                    </div>
+                </div>
+                
+                <!-- Student-specific fields -->
+                <div id="student-fields" style="display: none;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">University *</label>
+                            <input type="text" class="form-input" id="university" placeholder="e.g. Makerere University" />
+                            <div class="error-message" id="universityError"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Major/Field of Study *</label>
+                            <input type="text" class="form-input" id="major" placeholder="e.g. Computer Science" />
+                            <div class="error-message" id="majorError"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Business-specific fields -->
+                <div id="business-fields" style="display: none;">
+                    <div class="form-group">
+                        <label class="form-label">Industry *</label>
+                        <select class="form-select" id="industry">
+                            <option value="">Select your industry</option>
+                            <option value="technology">Technology</option>
+                            <option value="retail">Retail</option>
+                            <option value="finance">Finance</option>
+                            <option value="healthcare">Healthcare</option>
+                            <option value="education">Education</option>
+                            <option value="manufacturing">Manufacturing</option>
+                            <option value="consulting">Consulting</option>
+                            <option value="marketing">Marketing</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <div class="error-message" id="industryError"></div>
+                    </div>
+                </div>
+                
+                <div class="form-checkbox">
+                    <input type="checkbox" id="terms" required />
+                    <label for="terms">
+                        I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms and Conditions</a> *
+                    </label>
+                    <div class="error-message" id="termsError"></div>
+                </div>
+                
+                <div class="form-checkbox">
+                    <input type="checkbox" id="privacy" required />
+                    <label for="privacy">
+                        I accept the <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a> *
+                    </label>
+                    <div class="error-message" id="privacyError"></div>
+                </div>
+
+                <div class="form-checkbox">
+                    <input type="checkbox" id="dpa" required />
+                    <label for="dpa">
+                        I agree to the <a href="dpa.html" target="_blank" rel="noopener">Data Processing Addendum (DPA)</a> *
+                    </label>
+                    <div class="error-message" id="dpaError"></div>
+                </div>
+                
+                <button type="submit" class="auth-button">Create Account</button>
+                
+                <div class="auth-footer">
+                    <p>Already have an account? <a href="auth.html">Sign in here</a></p>
+                </div>
+            </form>
+        </div>
+        
+        <div class="benefits-section">
+            <h3 class="benefits-title">Why Join FunaGig?</h3>
+            <div class="benefits-list">
+                <div class="benefit-item">
+                    <div class="benefit-icon">✓</div>
+                    <span>Connect with top talent</span>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">✓</div>
+                    <span>Flexible work arrangements</span>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">✓</div>
+                    <span>Secure payment system</span>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">✓</div>
+                    <span>24/7 support</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Auto-select role from URL parameter
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const role = urlParams.get('role');
+            
+            if (role === 'student' || role === 'business') {
+                const roleRadio = document.querySelector(`input[name="role"][value="${role}"]`);
+                if (roleRadio) {
+                    roleRadio.checked = true;
+                    roleRadio.dispatchEvent(new Event('change'));
+                }
+            }
+        });
+
+        // Role selector functionality
+        document.querySelectorAll('input[name="role"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                // Update visual selection
+                document.querySelectorAll('.role-option').forEach(option => {
+                    option.classList.remove('selected');
+                });
+                this.closest('.role-option').classList.add('selected');
+                
+                // Show/hide role-specific fields
+                const studentFields = document.getElementById('student-fields');
+                const businessFields = document.getElementById('business-fields');
+                
+                if (this.value === 'student') {
+                    studentFields.style.display = 'block';
+                    businessFields.style.display = 'none';
+                } else if (this.value === 'business') {
+                    studentFields.style.display = 'none';
+                    businessFields.style.display = 'block';
+                } else {
+                    studentFields.style.display = 'none';
+                    businessFields.style.display = 'none';
+                }
+            });
+        });
+
+        document.getElementById('signup-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            clearErrors();
+            
+            const selectedRole = document.querySelector('input[name="role"]:checked');
+            const formData = {
+                role: selectedRole ? selectedRole.value : '',
+                name: document.getElementById('name').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                password: document.getElementById('password').value,
+                confirmPassword: document.getElementById('confirmPassword').value,
+                university: document.getElementById('university').value.trim(),
+                major: document.getElementById('major').value.trim(),
+                industry: document.getElementById('industry').value,
+                    terms: document.getElementById('terms').checked,
+                    privacy: document.getElementById('privacy').checked,
+                    dpa: document.getElementById('dpa').checked
+            };
+            
+            let isValid = true;
+            
+            if (!formData.role) {
+                showError('roleError', 'Please select your role');
+                isValid = false;
+            }
+            
+            if (!formData.name) {
+                showError('nameError', 'Name is required');
+                isValid = false;
+            }
+            
+            if (!formData.email) {
+                showError('emailError', 'Email is required');
+                isValid = false;
+            } else if (!isValidEmail(formData.email)) {
+                showError('emailError', 'Please enter a valid email address');
+                isValid = false;
+            }
+            
+            if (!formData.password) {
+                showError('passwordError', 'Password is required');
+                isValid = false;
+            } else if (formData.password.length < 6) {
+                showError('passwordError', 'Password must be at least 6 characters');
+                isValid = false;
+            }
+            
+            if (formData.password !== formData.confirmPassword) {
+                showError('confirmPasswordError', 'Passwords do not match');
+                isValid = false;
+            }
+            
+            if (formData.role === 'student') {
+                if (!formData.university) {
+                    showError('universityError', 'University is required');
+                    isValid = false;
+                }
+                if (!formData.major) {
+                    showError('majorError', 'Major is required');
+                    isValid = false;
+                }
+            } else if (formData.role === 'business') {
+                if (!formData.industry) {
+                    showError('industryError', 'Industry is required');
+                    isValid = false;
+                }
+            }
+            
+            if (!formData.terms) {
+                showError('termsError', 'You must agree to the Terms of Service');
+                isValid = false;
+            }
+            
+            if (!formData.privacy) {
+                showError('privacyError', 'You must accept the Privacy Policy');
+                isValid = false;
+            }
+            
+            if (!formData.dpa) {
+                showError('dpaError', 'You must agree to the Data Processing Addendum (DPA)');
+                isValid = false;
+            }
+            
+            if (isValid) {
+                // Send to backend
+                apiFetch('/signup', {
+                    method: 'POST',
+                    body: JSON.stringify(formData)
+                })
+                .then(response => {
+                    if (response.success) {
+                        alert('Account created successfully! Please log in.');
+                        window.location.href = 'auth.html';
+                    } else {
+                        showError('emailError', response.error || 'Signup failed');
+                    }
+                })
+                .catch(error => {
+                    showError('emailError', 'Error: Could not connect to server');
+                    console.error('Signup error:', error);
+                });
+            }
+        });
+        
+        function clearErrors() {
+            const errorElements = document.querySelectorAll('.error-message');
+            errorElements.forEach(element => {
+                element.textContent = '';
+                element.style.display = 'none';
+            });
+        }
+        
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            errorElement.style.color = 'var(--danger)';
+            errorElement.style.fontSize = '12px';
+            errorElement.style.marginTop = '4px';
+        }
+        
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+    </script>
+    <script src="js/app.js" type="module"></script>
+</body>
+</html>

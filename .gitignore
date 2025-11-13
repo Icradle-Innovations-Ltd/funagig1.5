@@ -1,0 +1,88 @@
+# Dependencies
+node_modules/
+vendor/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build outputs
+dist/
+build/
+.vite/
+.cache/
+out/
+
+# Environment variables and sensitive files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.production
+.env.digitalocean
+.env.backup
+*.key
+*.pem
+ca-certificate.crt
+php/ca-certificate.crt
+
+# Database credentials and test files
+test_*_connection.php
+test_do_*.php
+fix_ssl_connection.php
+setup-digitalocean.sh
+migrate-to-digitalocean.*
+*_secrets.php
+DO_IMPORT_GUIDE.md
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs_vista.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Logs
+logs/
+*.log
+apache_*.log
+mysql_*.log
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+.nyc_output
+
+# Temporary folders and files
+tmp/
+temp/
+*.tmp
+*.bak
+*.backup
+
+# Snyk Security Extension - AI Rules (auto-generated)
+.cursor\rules\snyk_rules.mdc
+
+# Snyk Security Extension - AI Rules (auto-generated)
+.github\instructions\snyk_rules.instructions.md

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Messages - FunaGig</title>
+    <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+    <header class="navbar">
+        <div class="brand">
+            <div class="logo"></div> FunaGig
+        </div>
+    </header>
+    <div class="app-layout">
+        <aside class="sidebar">
+            <div class="title" style="display:flex; align-items:center; gap:10px;">
+                <div class="cover-img" style="width:36px;height:36px;">ST</div> Student User
+            </div>
+            <nav class="navlist">
+                <a class="navitem" href="student-dashboard.html">Dashboard</a>
+                <a class="navitem" href="gigs.html">Gigs</a>
+                <a class="navitem" href="student-profile.html">Profile</a>
+                <a class="navitem active" href="student-messaging.html">Messages</a>
+                <a class="navitem" href="index.html">Log out</a>
+            </nav>
+        </aside>
+        <main class="messaging-container">
+            <!-- Existing messaging content from document -->
+            <div class="conversations-sidebar">
+                <div class="conversations-header">
+                    <h2>Messages</h2>
+                    <input type="text" placeholder="Search..." />
+                </div>
+                <div id="conversationsList" class="conversations-list">
+                    <!-- JS-loaded -->
+                </div>
+            </div>
+            <div class="chat-area">
+                <div id="chatHeader" class="chat-header" style="display:none;">
+                    <div class="chat-user-info">
+                        <div id="chatUserAvatar" class="chat-user-avatar">B</div>
+                        <div class="chat-user-details">
+                            <h3 id="chatUserName">Employer</h3>
+                            <p id="chatUserEmail">email@example.com</p>
+                        </div>
+                    </div>
+                    <div class="chat-actions">
+                        <button onclick="viewGigDetails()">View Gig</button>
+                        <button onclick="reportEmployer()">Report</button>
+                    </div>
+                </div>
+                <div id="chatMessages" class="chat-messages">
+                    <div class="no-conversation">
+                        <h3>Select Conversation</h3>
+                        <p>Chats start when employer messages you.</p>
+                    </div>
+                </div>
+                <div id="chatInputArea" class="chat-input-area" style="display:none;">
+                    <input type="file" id="fileInput" style="display:none;" />
+                    <button onclick="document.getElementById('fileInput').click()">📎</button>
+                    <textarea id="messageInput" placeholder="Type message..."></textarea>
+                    <button id="sendBtn" onclick="sendMessage()">➤</button>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="js/app.js"></script>
+    <script>
+        // Load user data and update sidebar
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is logged in
+            if (!Auth.isLoggedIn()) {
+                window.location.href = 'auth.html';
+                return;
+            }
+            
+            const user = Auth.getUser();
+            if (user) {
+                // Check if user is a student
+                if (user.type !== 'student') {
+                    showNotification('Access denied. This page is for students only.', 'error');
+                    window.location.href = user.type === 'business' ? 'business-dashboard.html' : 'auth.html';
+                    return;
+                }
+                
+                // Update user name in sidebar
+                const userName = user.name;
+                const userInitials = userName.split(' ').map(n => n[0]).join('').toUpperCase();
+                
+                // Update sidebar
+                const sidebarTitle = document.querySelector('.sidebar .title');
+                if (sidebarTitle) {
+                    sidebarTitle.innerHTML = `<div class="cover-img" style="width:36px;height:36px;">${userInitials}</div> ${userName}`;
+                }
+                
+                // Load conversations
+                loadConversations();
+            }
+        });
+        
+        async function loadConversations() {
+            try {
+                const response = await apiFetch('/conversations');
+                if (response.success) {
+                    updateConversationsList(response.conversations);
+                }
+            } catch (error) {
+                console.error('Failed to load conversations:', error);
+                showNotification('Failed to load conversations', 'error');
+            }
+        }
+        
+        function updateConversationsList(conversations) {
+            const conversationsList = document.getElementById('conversationsList');
+            if (conversationsList && conversations) {
+                conversationsList.innerHTML = conversations.map(conv => `
+                    <div class="conversation-item" onclick="selectConversation(${conv.id})">
+                        <div class="conversation-avatar">${conv.other_user_name.charAt(0).toUpperCase()}</div>
+                        <div class="conversation-content">
+                            <div class="conversation-name">${conv.other_user_name}</div>
+                            <div class="conversation-preview">${conv.last_message || 'No messages yet'}</div>
+                        </div>
+                        <div class="conversation-meta">
+                            <div class="conversation-time">${new Date(conv.last_message_time).toLocaleDateString()}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+        
+        function selectConversation(conversationId) {
+            // Load messages for this conversation
+            loadMessages(conversationId);
+        }
+        
+        async function loadMessages(conversationId) {
+            try {
+                const response = await apiFetch(`/messages/${conversationId}`);
+                if (response.success) {
+                    updateMessagesList(response.messages);
+                    showChatArea();
+                }
+            } catch (error) {
+                console.error('Failed to load messages:', error);
+                showNotification('Failed to load messages', 'error');
+            }
+        }
+        
+        function updateMessagesList(messages) {
+            const chatMessages = document.getElementById('chatMessages');
+            if (chatMessages && messages) {
+                chatMessages.innerHTML = messages.map(msg => `
+                    <div class="message ${msg.sender_id === getCurrentUserId() ? 'own' : ''}">
+                        <div class="message-avatar">${msg.sender_name.charAt(0).toUpperCase()}</div>
+                        <div class="message-content">
+                            <div class="message-text">${msg.content}</div>
+                            <div class="message-time">${new Date(msg.created_at).toLocaleString()}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+        
+        function showChatArea() {
+            document.getElementById('chatHeader').style.display = 'flex';
+            document.getElementById('chatInputArea').style.display = 'block';
+        }
+        
+        function getCurrentUserId() {
+            const user = Auth.getUser();
+            return user ? user.id : null;
+        }
+        
+        function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+            
+            if (message) {
+                // Send message via API
+                apiFetch('/messages', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        conversation_id: getCurrentConversationId(),
+                        message: message
+                    })
+                })
+                .then(response => {
+                    if (response.success) {
+                        messageInput.value = '';
+                        // Reload messages
+                        loadMessages(getCurrentConversationId());
+                    } else {
+                        showNotification('Failed to send message', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Send message error:', error);
+                    showNotification('Failed to send message', 'error');
+                });
+            }
+        }
+        
+        function getCurrentConversationId() {
+            // This would be set when a conversation is selected
+            return window.currentConversationId || null;
+        }
+    </script>
+</body>
+</html>
