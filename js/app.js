@@ -425,18 +425,35 @@ if (typeof module !== 'undefined' && module.exports) {
 // Expose functions to global window object for inline scripts
 if (typeof window !== 'undefined') {
     console.log('Exposing functions to window object...');
-    window.apiFetch = apiFetch;
-    window.Storage = Storage;
-    window.Auth = Auth;
-    window.Validation = Validation;
-    window.UI = UI;
-    window.showNotification = showNotification;
-    console.log('Functions exposed. apiFetch type:', typeof window.apiFetch);
     
-    // Dispatch a custom event to notify that functions are ready
-    window.dispatchEvent(new CustomEvent('appReady', { 
-        detail: { apiFetch, Storage, Auth, Validation, UI, showNotification }
-    }));
-    console.log('App ready event dispatched');
+    // Use a more defensive approach for function exposure
+    const functions = {
+        apiFetch,
+        Storage,
+        Auth,
+        Validation,
+        UI,
+        showNotification
+    };
+    
+    // Expose each function individually with error handling
+    Object.keys(functions).forEach(funcName => {
+        try {
+            window[funcName] = functions[funcName];
+            console.log(`${funcName} exposed, type:`, typeof window[funcName]);
+        } catch (error) {
+            console.error(`Failed to expose ${funcName}:`, error);
+        }
+    });
+    
+    console.log('All functions exposed. Final apiFetch type:', typeof window.apiFetch);
+    
+    // Dispatch event in next tick to ensure all functions are properly assigned
+    setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('appReady', { 
+            detail: functions
+        }));
+        console.log('App ready event dispatched');
+    }, 0);
 }
 
