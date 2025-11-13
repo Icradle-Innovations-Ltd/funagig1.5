@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form-based Login Test</title>
+</head>
+<body>
+    <h1>Form-based Login Test</h1>
+    <form id="loginForm">
+        <input type="email" name="email" value="alice@demo.com" placeholder="Email" required>
+        <input type="password" name="password" value="demo123" placeholder="Password" required>
+        <button type="submit">Login</button>
+    </form>
+    <div id="result"></div>
+    
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            try {
+                document.getElementById('result').innerHTML = 'Testing form-data login...';
+                
+                const formData = new FormData(e.target);
+                
+                const response = await fetch('https://plankton-app-3beec.ondigitalocean.app/login', {
+                    method: 'POST',
+                    mode: 'cors',
+                    credentials: 'include',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                document.getElementById('result').innerHTML = `
+                    <h3>Form Login Result:</h3>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                document.getElementById('result').innerHTML = `
+                    <h3>Error:</h3>
+                    <pre>${error.message}</pre>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

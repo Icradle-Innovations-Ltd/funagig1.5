@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Direct Login Test</title>
+</head>
+<body>
+    <h1>Direct Login Test</h1>
+    <button onclick="testDirectLogin()">Test Direct Login (no-cors)</button>
+    <div id="result"></div>
+    
+    <script>
+        async function testDirectLogin() {
+            try {
+                document.getElementById('result').innerHTML = 'Testing...';
+                
+                const response = await fetch('https://plankton-app-3beec.ondigitalocean.app/login', {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: 'alice@demo.com',
+                        password: 'demo123'
+                    })
+                });
+                
+                document.getElementById('result').innerHTML = `
+                    <h3>Direct Login Result:</h3>
+                    <p>Status: ${response.status}</p>
+                    <p>Type: ${response.type}</p>
+                    <p>OK: ${response.ok}</p>
+                    <p>Note: Response body not available in no-cors mode</p>
+                `;
+            } catch (error) {
+                document.getElementById('result').innerHTML = `
+                    <h3>Error:</h3>
+                    <pre>${error.message}</pre>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

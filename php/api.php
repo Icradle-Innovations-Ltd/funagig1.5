@@ -126,7 +126,26 @@ function handleLogin() {
     }
     
     try {
-        $input = json_decode(file_get_contents('php://input'), true);
+        // Handle both JSON and form data
+        $email = '';
+        $password = '';
+        
+        // Check content type and parse accordingly
+        $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+        
+        if (strpos($contentType, 'application/json') !== false) {
+            // Handle JSON input
+            $input = json_decode(file_get_contents('php://input'), true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                sendError('Invalid JSON data');
+            }
+            $email = sanitizeInput($input['email'] ?? '');
+            $password = $input['password'] ?? '';
+        } else {
+            // Handle form data
+            $email = sanitizeInput($_POST['email'] ?? '');
+            $password = $_POST['password'] ?? '';
+        }
         
         // Rate limiting (toggle via RATE_LIMIT_ENABLED)
         if (defined('RATE_LIMIT_ENABLED') && RATE_LIMIT_ENABLED) {
@@ -135,13 +154,6 @@ function handleLogin() {
                 sendError('Too many login attempts. Please try again later.', 429);
             }
         }
-        
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            sendError('Invalid JSON data');
-        }
-        
-        $email = sanitizeInput($input['email'] ?? '');
-        $password = $input['password'] ?? '';
         
         if (empty($email) || empty($password)) {
             sendError('Email and password are required');
