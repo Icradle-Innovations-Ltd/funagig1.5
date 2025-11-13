@@ -6,7 +6,7 @@
 define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
 define('DB_NAME', getenv('DB_NAME') ?: 'funagig');
 define('DB_USER', getenv('DB_USER') ?: 'root');
-define('DB_PASS', getenv('DB_PASS') ?: '97swain'); // Use environment variables in production
+define('DB_PASS', getenv('DB_PASS') ?: ''); // No hardcoded password - use environment variables
 define('DB_PORT', (int)(getenv('DB_PORT') ?: 3306));
 define('DB_SSL', getenv('DB_SSL') === 'true');
 define('DB_SSL_MODE', getenv('DB_SSL_MODE') ?: 'PREFERRED');
@@ -44,8 +44,10 @@ if (PRODUCTION_MODE) {
 
 // Security headers
 function setSecurityHeaders() {
-    // Prevent clickjacking (DENY is most secure)
-    header('X-Frame-Options: SAMEORIGIN'); // Changed from DENY for flexibility
+    // Prevent clickjacking - DENY for maximum security
+    if (!headers_sent()) {
+        header('X-Frame-Options: DENY');
+    }
     
     // Prevent MIME type sniffing
     header('X-Content-Type-Options: nosniff');
@@ -61,11 +63,18 @@ function setSecurityHeaders() {
     
     // Force HTTPS if required
     if (HTTPS_REQUIRED && !isset($_SERVER['HTTPS'])) {
-        $host = filter_var($_SERVER['HTTP_HOST'], FILTER_SANITIZE_URL);
-        $uri = filter_var($_SERVER['REQUEST_URI'], FILTER_SANITIZE_URL);
-        if ($host && $uri) {
-            header('Location: https://' . $host . $uri, true, 301);
-            exit();
+        // Validate host against allowed hosts to prevent open redirect
+        $host = $_SERVER['HTTP_HOST'] ?? '';
+        $allowedHosts = ['localhost', 'funagig.com', 'www.funagig.com', 'plankton-app-3beec.ondigitalocean.app'];
+        
+        // Additional validation to prevent header injection
+        if (in_array($host, $allowedHosts, true) && preg_match('/^[a-zA-Z0-9.-]+$/', $host)) {
+            $uri = filter_var($_SERVER['REQUEST_URI'], FILTER_SANITIZE_URL);
+            // Ensure URI starts with / to prevent external redirects
+            if ($uri && strpos($uri, '/') === 0 && !preg_match('/^\/\//i', $uri)) {
+                header('Location: https://' . $host . $uri, true, 301);
+                exit();
+            }
         }
     }
 }
@@ -293,7 +302,7 @@ function sendError($message, $status = 400) {
 
 // Rate limiting function
 function checkRateLimit($identifier, $maxAttempts = 10, $timeWindow = 300) {
-    $key = 'rate_limit_' . md5($identifier);
+    $key = 'rate_limit_' . hash('sha256', $identifier);
     $attempts = $_SESSION[$key] ?? [];
     
     // Clean old attempts
@@ -338,8 +347,16 @@ function createUserSession($user) {
     $_SESSION['login_time'] = time();
     $_SESSION['last_activity'] = time();
     
-    // Set session cookie
-    setcookie('funagig_session', session_id(), time() + 86400, '/', '', false, true);
+    // Set session cookie with security attributes
+    $isHTTPS = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+    setcookie('funagig_session', session_id(), [
+        'expires' => time() + 86400,
+        'path' => '/',
+        'domain' => '',
+        'secure' => $isHTTPS,
+        'httponly' => true,
+        'samesite' => 'Lax'
+    ]);
     
     return true;
 }
@@ -442,8 +459,9 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'OPTIONS
 }
 
 // Session and Cookie Configuration (must be before session_start)
+$isHTTPS = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
 ini_set('session.cookie_httponly', 1);
-ini_set('session.cookie_secure', 0); // Set to 1 for HTTPS
+ini_set('session.cookie_secure', $isHTTPS ? 1 : 0); // Conditional based on HTTPS
 ini_set('session.use_only_cookies', 1);
 ini_set('session.cookie_samesite', 'Lax');
 ini_set('session.cookie_lifetime', 86400); // 24 hours
@@ -453,7 +471,7 @@ session_set_cookie_params([
     'lifetime' => 86400, // 24 hours
     'path' => '/',
     'domain' => '',
-    'secure' => false, // Set to true for HTTPS
+    'secure' => $isHTTPS, // Conditional based on HTTPS
     'httponly' => true,
     'samesite' => 'Lax'
 ]);
