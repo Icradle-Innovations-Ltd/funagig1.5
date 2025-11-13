@@ -200,9 +200,36 @@
         </div>
         <nav class="nav">
             <a href="index.html" class="nav-link">Home</a>
-            <a href="auth.html" class="nav-link">Login</a>
+            <a href="#" id="authLink" class="nav-link">Login</a>
         </nav>
     </header>
+
+    <!-- Add authentication detection script -->
+    <script>
+        // Check authentication and update nav
+        document.addEventListener('DOMContentLoaded', function() {
+            const authLink = document.getElementById('authLink');
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            
+            if (isLoggedIn) {
+                authLink.textContent = 'Logout';
+                authLink.onclick = function(e) {
+                    e.preventDefault();
+                    if (window.Auth) {
+                        Auth.logout();
+                    } else {
+                        // Fallback logout
+                        localStorage.clear();
+                        window.location.href = 'index.html';
+                    }
+                    return false;
+                };
+            } else {
+                authLink.href = 'auth.html';
+                authLink.textContent = 'Login';
+            }
+        });
+    </script>
 
     <div class="notification-page">
         <div class="notification-header">

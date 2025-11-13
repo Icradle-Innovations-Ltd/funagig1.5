@@ -341,10 +341,42 @@
         <nav class="nav-actions">
             <a class="btn ghost" href="index.html">Home</a>
             <a class="btn ghost" href="index.html#contact">Contact</a>
-            <a class="btn ghost" href="auth.html">Login</a>
-            <a class="btn" href="signup.html">Sign Up</a>
+            <a class="btn ghost" href="#" id="authButton">Login</a>
+            <a class="btn" href="signup.html" id="signupButton">Sign Up</a>
         </nav>
     </header>
+
+    <!-- Add authentication detection script -->
+    <script>
+        // Check authentication and update nav
+        document.addEventListener('DOMContentLoaded', function() {
+            const authButton = document.getElementById('authButton');
+            const signupButton = document.getElementById('signupButton');
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            
+            if (isLoggedIn) {
+                authButton.textContent = 'Logout';
+                authButton.className = 'btn danger';
+                authButton.onclick = function(e) {
+                    e.preventDefault();
+                    if (window.Auth) {
+                        Auth.logout();
+                    } else {
+                        // Fallback logout
+                        localStorage.clear();
+                        window.location.href = 'index.html';
+                    }
+                    return false;
+                };
+                signupButton.style.display = 'none';
+            } else {
+                authButton.href = 'auth.html';
+                authButton.textContent = 'Login';
+                authButton.className = 'btn ghost';
+                signupButton.style.display = 'inline-block';
+            }
+        });
+    </script>
 
     <main class="container">
         <div class="gigs-container">
