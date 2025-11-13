@@ -40,4 +40,4 @@ vercel --prod
 - **Backend**: https://plankton-app-3beec.ondigitalocean.app
 - **Alternative**: https://plankton-app-3beec.ondigitalocean.app (full app)
 
-Your users can access the app from either URL once configured!
+Your users can access the app from either URL once configured!# Environment variables configured
