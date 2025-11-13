@@ -54,6 +54,10 @@ if ($script && strpos($path, $script) === 0) {
 
 // Route the request
 switch ($path) {
+    case '/':
+    case '/health':
+        sendResponse(['status' => 'ok', 'message' => 'FunaGig API is running']);
+        break;
     case '/login':
         handleLogin();
         break;

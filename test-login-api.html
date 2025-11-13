@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Login API</title>
+</head>
+<body>
+    <h1>Testing Login API</h1>
+    <div id="status">Loading...</div>
+    <button onclick="testLogin()">Test Login</button>
+    
+    <script>
+        let apiFetch = null;
+
+        // Wait for apiFetch to be available
+        function waitForApiFetch() {
+            return new Promise((resolve) => {
+                const checkApiFetch = () => {
+                    if (window.apiFetch) {
+                        apiFetch = window.apiFetch;
+                        document.getElementById('status').innerHTML = '✅ apiFetch is available!';
+                        resolve();
+                    } else {
+                        setTimeout(checkApiFetch, 100);
+                    }
+                };
+                checkApiFetch();
+            });
+        }
+
+        async function testLogin() {
+            try {
+                document.getElementById('status').innerHTML = 'Testing login...';
+                
+                const response = await apiFetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: 'alice@demo.com',
+                        password: 'demo123'
+                    })
+                });
+
+                document.getElementById('status').innerHTML = `
+                    <h3>Login Response:</h3>
+                    <pre>${JSON.stringify(response, null, 2)}</pre>
+                `;
+            } catch (error) {
+                document.getElementById('status').innerHTML = `
+                    <h3>Login Error:</h3>
+                    <pre>${error.message}</pre>
+                `;
+            }
+        }
+
+        // Initialize when page loads
+        waitForApiFetch();
+    </script>
+    <script type="module" src="/js/app.js"></script>
+</body>
+</html>
