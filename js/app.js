@@ -44,11 +44,21 @@ let globalNotificationManager = null;
 
 // Utility Functions
 function showNotification(message, type = 'info') {
+    // Create notification container
     const notification = document.createElement('div');
     notification.className = `notification notification-${type}`;
-    // Sanitize input to prevent XSS attacks
-    const sanitizedMessage = String(message || 'Unknown error').replace(/<[^>]*>/g, '');
+    
+    // Sanitize input to prevent XSS attacks - only allow plain text
+    const sanitizedMessage = String(message || 'Unknown error')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#x27;');
+    
+    // Use textContent for safe text insertion (not innerHTML)
     notification.textContent = sanitizedMessage;
+    
+    // Apply safe inline styles
     notification.style.cssText = `
         position: fixed;
         top: 20px;
@@ -60,7 +70,16 @@ function showNotification(message, type = 'info') {
         z-index: 1000;
         animation: slideIn 0.3s ease;
     `;
-    document.body.appendChild(notification);
+    
+    // Safely append to body
+    if (document.body) {
+        document.body.appendChild(notification);
+    } else {
+        // Fallback for cases where body isn't ready
+        document.addEventListener('DOMContentLoaded', () => {
+            document.body.appendChild(notification);
+        });
+    }
     
     setTimeout(() => {
         notification.remove();
