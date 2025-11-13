@@ -74,6 +74,25 @@ async function apiFetch(endpoint, options = {}) {
     
     const config = { ...defaultOptions, ...options };
     
+    // For POST requests, try to use FormData to avoid CORS preflight
+    if (config.method === 'POST' && config.body && typeof config.body === 'string') {
+        try {
+            const jsonData = JSON.parse(config.body);
+            // Convert JSON to FormData for simple login/signup requests
+            if (endpoint === '/login' || endpoint === '/signup') {
+                const formData = new FormData();
+                Object.keys(jsonData).forEach(key => {
+                    formData.append(key, jsonData[key]);
+                });
+                config.body = formData;
+                // Remove Content-Type header to let browser set it for FormData
+                delete config.headers['Content-Type'];
+            }
+        } catch (e) {
+            // If parsing fails, keep original body
+        }
+    }
+    
     try {
         const response = await fetch(url, config);
         
