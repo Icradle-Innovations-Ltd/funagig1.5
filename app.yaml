@@ -5,8 +5,6 @@ services:
   github:
     repo: Icradle-Innovations-Ltd/funagig1.5
     branch: master
-  build_command: echo "No build needed for PHP"
-  run_command: vendor/bin/heroku-php-apache2 php/
   environment_slug: php
   instance_count: 1
   instance_size_slug: basic-xxs
