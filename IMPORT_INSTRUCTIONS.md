@@ -15,9 +15,9 @@ Your local FunaGig database has been successfully exported and prepared for Digi
 Since your connection is working, first create the funagig database:
 
 ```bash
-mysql -h db-mysql-nyc3-54879-do-user-22777945-0.l.db.ondigitalocean.com \
+mysql -h your-database-host.ondigitalocean.com \
       -P 25060 \
-      -u doadmin \
+      -u your-database-user \
       -p \
       defaultdb \
       -e "CREATE DATABASE funagig CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
@@ -26,9 +26,9 @@ mysql -h db-mysql-nyc3-54879-do-user-22777945-0.l.db.ondigitalocean.com \
 ### **Step 2: Import your database**
 
 ```bash
-mysql -h db-mysql-nyc3-54879-do-user-22777945-0.l.db.ondigitalocean.com \
+mysql -h your-database-host.ondigitalocean.com \
       -P 25060 \
-      -u doadmin \
+      -u your-database-user \
       -p \
       funagig < database/exports/funagig_digitalocean_ready.sql
 ```
@@ -36,9 +36,9 @@ mysql -h db-mysql-nyc3-54879-do-user-22777945-0.l.db.ondigitalocean.com \
 ### **Step 3: Verify import**
 
 ```bash
-mysql -h db-mysql-nyc3-54879-do-user-22777945-0.l.db.ondigitalocean.com \
+mysql -h your-database-host.ondigitalocean.com \
       -P 25060 \
-      -u doadmin \
+      -u your-database-user \
       -p \
       funagig \
       -e "SHOW TABLES; 
@@ -62,10 +62,10 @@ cp .env.digitalocean .env
 
 Your `.env.digitalocean` is already configured with:
 ```env
-DB_HOST=db-mysql-nyc3-54879-do-user-22777945-0.l.db.ondigitalocean.com
+DB_HOST=your-database-host.ondigitalocean.com
 DB_NAME=funagig
-DB_USER=doadmin
-DB_PASS=AVNS_rESJD28uBjcQ8rmg5ti
+DB_USER=your-database-user
+DB_PASS=your-database-password
 DB_PORT=25060
 DB_SSL=false  # Will work without explicit SSL for now
 ```

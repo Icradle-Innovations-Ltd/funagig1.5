@@ -73,10 +73,11 @@ echo "✅ Environment files found"
 echo "🗄️ Testing database connection..."
 if command -v mysql &> /dev/null; then
     # Try to connect to DigitalOcean database
-    if mysql -u doadmin -pAVNS_rESJD28uBjcQ8rmg5ti -h db-mysql-nyc3-54879-do-user-22777945-0.l.db.ondigitalocean.com -P 25060 -e "SELECT 1;" &> /dev/null; then
-        echo "✅ DigitalOcean database connection successful"
-    else
-        echo "⚠️  Cannot connect to DigitalOcean database (may be normal if not on allowlist)"
+    # Note: Replace with your actual credentials
+    # if mysql -u your-db-user -pyour-db-password -h your-db-host -P 25060 -e "SELECT 1;" &> /dev/null; then
+    #     echo "✅ DigitalOcean database connection successful"
+    # else
+    echo "⚠️  Database connection test skipped (replace with your credentials in production)"
     fi
 else
     echo "⚠️  mysql client not found, skipping database test"
@@ -112,7 +113,7 @@ echo "  - Environment: .env.production"
 echo ""
 echo "Database:"
 echo "  - Provider: DigitalOcean Managed MySQL"
-echo "  - Host: db-mysql-nyc3-54879-do-user-22777945-0.l.db.ondigitalocean.com"
+echo "  - Host: your-database-host.ondigitalocean.com"
 echo "  - Port: 25060"
 echo ""
 echo "🎯 READY FOR DEPLOYMENT!"

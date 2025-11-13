@@ -42,7 +42,7 @@ DigitalOcean offers connection pools that can work without direct SSL from your 
 
 This will give you a new connection string like:
 ```
-Host: db-mysql-nyc3-54879-do-user-22777945-0.c.db.ondigitalocean.com
+Host: your-database-host.c.db.ondigitalocean.com
 Port: 25061
 ```
 
@@ -68,9 +68,9 @@ Since you need to get started quickly, let's use the MySQL command line client f
 
 ### Test Connection with MySQL CLI:
 ```bash
-mysql -h db-mysql-nyc3-54879-do-user-22777945-0.l.db.ondigitalocean.com \
+mysql -h your-database-host.ondigitalocean.com \
       -P 25060 \
-      -u doadmin \
+      -u your-database-user \
       -p \
       --ssl-mode=REQUIRED \
       defaultdb
@@ -82,9 +82,9 @@ mysql -h db-mysql-nyc3-54879-do-user-22777945-0.l.db.ondigitalocean.com \
 migrate-to-digitalocean.bat
 
 # Then import to DigitalOcean
-mysql -h db-mysql-nyc3-54879-do-user-22777945-0.l.db.ondigitalocean.com \
+mysql -h your-database-host.ondigitalocean.com \
       -P 25060 \
-      -u doadmin \
+      -u your-database-user \
       -p \
       --ssl-mode=REQUIRED \
       defaultdb < database/exports/funagig_digitalocean_DATETIME.sql

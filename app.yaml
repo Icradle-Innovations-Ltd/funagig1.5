@@ -15,13 +15,13 @@ services:
     preserve_path_prefix: true
   envs:
   - key: DB_HOST
-    value: db-mysql-nyc3-54879-do-user-22777945-0.l.db.ondigitalocean.com
+    value: your-database-host.ondigitalocean.com
   - key: DB_PORT
     value: "25060"
   - key: DB_USER
-    value: doadmin
+    value: your-database-user
   - key: DB_PASS
-    value: AVNS_rESJD28uBjcQ8rmg5ti
+    value: your-database-password
   - key: DB_NAME
     value: funagig
   - key: DB_SSL

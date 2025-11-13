@@ -46,13 +46,13 @@ services:
   - path: /api
   envs:
   - key: DB_HOST
-    value: db-mysql-nyc3-54879-do-user-22777945-0.l.db.ondigitalocean.com
+    value: your-database-host.ondigitalocean.com
   - key: DB_PORT
     value: "25060"
   - key: DB_USER
-    value: doadmin
+    value: your-database-user
   - key: DB_PASS
-    value: AVNS_rESJD28uBjcQ8rmg5ti
+    value: your-database-password
   - key: DB_NAME
     value: funagig
   - key: DB_SSL
@@ -243,10 +243,10 @@ git push origin main
 
 ```env
 # Database (already configured)
-DB_HOST=db-mysql-nyc3-54879-do-user-22777945-0.l.db.ondigitalocean.com
+DB_HOST=your-database-host.ondigitalocean.com
 DB_PORT=25060
-DB_USER=doadmin
-DB_PASS=AVNS_rESJD28uBjcQ8rmg5ti
+DB_USER=your-database-user
+DB_PASS=your-database-password
 DB_NAME=funagig
 
 # Production settings

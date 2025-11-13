@@ -28,10 +28,10 @@ git push origin main
    - **Run Command**: Leave default
 4. **Add Environment Variables**:
    ```
-   DB_HOST=db-mysql-nyc3-54879-do-user-22777945-0.l.db.ondigitalocean.com
+   DB_HOST=your-database-host.ondigitalocean.com
    DB_PORT=25060
-   DB_USER=doadmin
-   DB_PASS=AVNS_rESJD28uBjcQ8rmg5ti
+   DB_USER=your-database-user
+   DB_PASS=your-database-password
    DB_NAME=funagig
    PRODUCTION_MODE=true
    ```
