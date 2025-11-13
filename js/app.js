@@ -33,10 +33,11 @@ if (VITE_API_BASE_URL) {
     // Distributed config fallback
     APP_API_BASE_URL = window.API_BASE_URL;
 } else {
-    // Development: Use production backend for testing with created accounts
-    // DigitalOcean App Platform serves the PHP API directly
-    APP_API_BASE_URL = 'https://plankton-app-3beec.ondigitalocean.app';
-    // Local backend alternative (uncomment if you want to use local XAMPP):
+    // Development: Use Vite proxy to avoid CORS issues
+    APP_API_BASE_URL = '/api';
+    // Production backend alternative (for direct testing):
+    // APP_API_BASE_URL = 'https://plankton-app-3beec.ondigitalocean.app';
+    // Local XAMPP alternative (requires XAMPP setup):
     // APP_API_BASE_URL = `http://${BACKEND_SERVER_IP}${XAMPP_BASE_PATH}/php/api.php`;
 }
 

@@ -10,8 +10,14 @@ export default defineConfig({
   server: {
     port: 3000,
     host: true, // Allow external connections
-    // Proxy removed for distributed deployment
-    // Frontend will make direct API calls to backend server
+    proxy: {
+      // Proxy API requests to production server to avoid CORS issues in development
+      '/api': {
+        target: 'https://plankton-app-3beec.ondigitalocean.app',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
+    }
   },
   build: {
     outDir: 'dist',
